@@ -9,24 +9,24 @@ import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 // @author TeamWestCoast
-contract NFT is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
+contract NFT is ERC721, Ownable, ReentrancyGuard {
 
     using Counters for Counters.Counter;
     string public baseURI;
 
     Counters.Counter private _tokenIds;
 
-    uint[] private _teamShares = [33, 33, 34];
+    // uint[] private _teamShares = [33, 33, 34];
 
-    address[] private _team = [
-        0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94,
-        0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94,
-        0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94
-    ]; 
+    // address[] private _team = [
+    //     0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94,
+    //     0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94,
+    //     0x594DB4be0477A6835AA2608119eA5Dd6F45F1C94
+    // ]; // PaymentSplitter(_team, _teamShares)
 
     constructor(string memory _name, string memory _symbol, string memory _baseUri)
         ERC721(_name, _symbol)
-        PaymentSplitter(_team, _teamShares)
+        
         ReentrancyGuard()
     {
         setBaseURI(_baseUri);

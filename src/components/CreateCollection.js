@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Row, Form, Button } from "react-bootstrap";
-import { ethers } from "ethers";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
+import React from 'react';
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateCollection = ({ marketplace, nft, factory }) => {
-
-    const [image, setImage] = useState('')
-    const [artistName, setName] = useState('')
-    const [artistSymbol, setSymbol] = useState('')
-    const [collection, setCollection] = useState('')
+const CreateCollection = ({ state, account }) => {
+    const [image, setImage] = useState('');
+    const [artistName, setName] = useState('');
+    const [artistSymbol, setSymbol] = useState('');
 
     const uploadToIPFS = async (event) => {
         event.preventDefault();
@@ -21,7 +19,7 @@ const CreateCollection = ({ marketplace, nft, factory }) => {
     }
 
     const createCollection = async () => {
-        if (!image || !artistName || !artistSymbol) return
+        if (!image || !artistName || !artistSymbol) return (<div>Pb pour createCollection</div>)
         try{
           const result = await client.add(JSON.stringify({image, artistName, artistSymbol}))
           deployThenList(result)
@@ -31,16 +29,16 @@ const CreateCollection = ({ marketplace, nft, factory }) => {
       }
 
       const deployThenList = async (result) => {
-        const uri = `https://ipfs.infura.io/ipfs/${result.path}`
-        console.log(factory)
-        console.log(uri)
-        const id = await factory.collectionId();
+
+        const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
+        console.log(state.factoryContract)
+        await(await state.factoryContract.createNFTCollection(artistName, artistSymbol, uri)).wait();
+        const id = await state.factoryContract.getCollectionId.call(); 
         console.log(id);
-        // await(await factory.createNFTCollection(artistName, artistSymbol, uri)).wait()
-        // addr = await(await factory.getCollection(factory.collectionId)).wait();
-        
-        // add collection to marketplace
-        // await(await marketplace.addCollection(addr)).wait()
+        const addr = await state.factoryContract.getCollection(id);
+        console.log(id);
+        console.log(addr);
+        await(await state.marketContract.addCollection(addr)).wait();
       }
 
       return (

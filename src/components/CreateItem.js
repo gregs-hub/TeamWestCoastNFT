@@ -1,16 +1,15 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Row, Form, Button } from "react-bootstrap";
-import { ethers } from "ethers";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateItem = ({ marketplace, nft }) => {
+const CreateItem = ({ state }) => {
 
-    const [image, setImage] = useState('')
-    const [price, setPrice] = useState(null)
-    const [name, setName] = useState('')
-    const [description, setDescription] = useState('')
-    const [collection, setCollection] = useState('')
+    const [image, setImage] = useState('');
+    const [price, setPrice] = useState(null);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [collection, setCollection] = useState('');
 
     const uploadToIPFS = async (event) => {
         event.preventDefault();
@@ -34,14 +33,14 @@ const CreateItem = ({ marketplace, nft }) => {
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`
         // mint nft 
 
-        await(await nft.mint(uri)).wait()
-        // get tokenId of new nft 
-        const id = await nft.tokenCount()
-        // approve marketplace to spend nft
-        await(await nft.setApprovalForAll(marketplace.address, true)).wait()
-        // add nft to marketplace
-        const listingPrice = ethers.utils.parseEther(price.toString())
-        await(await marketplace.makeItem(nft.address, id, listingPrice)).wait()
+        // await(await nft.mint(uri)).wait()
+        // // get tokenId of new nft 
+        // const id = await nft.tokenCount()
+        // // approve marketplace to spend nft
+        // await(await nft.setApprovalForAll(marketplace.address, true)).wait()
+        // // add nft to marketplace
+        // // const listingPrice = ethers.utils.parseEther(price.toString())
+        // await(await marketplace.makeItem(nft.address, id, listingPrice)).wait()
       }
       return (
         <div className="container-fluid mt-5">

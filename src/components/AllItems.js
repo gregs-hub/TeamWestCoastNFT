@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react'
-import { ethers } from "ethers"
 import { Row, Col, Card, Button } from 'react-bootstrap'
+import React from 'react';
 
-const AllItems = ({nft, marketplace, account}) => {
-    const [loading, setLoading] = useState(true)
-    const [items, setItems] = useState([])
+function AllItems({ state }) {
+
+    const [loading, setLoading] = useState(true);
+    const [items, setItems] = useState([]);
     const loadMarketplaceItems = async () => {
-      // Load all unsold items
-      const itemCount = await marketplace.itemCount()
+
+      const itemCount = await state.marketContract.itemCount();
       let items = []
       for (let i = 1; i <= itemCount; i++) {
-        const item = await marketplace.items(i)
+        const item = await state.marketContract.items(i);
         if (!item.sold) {
-          // get uri url from nft contract
-          const uri = await nft.tokenURI(item.tokenId)
-          // use uri to fetch the nft metadata stored on ipfs 
-          const response = await fetch(uri)
-          const metadata = await response.json()
-          // get total price of item (item price + fee)
-          const totalPrice = await marketplace.getTotalPrice(item.itemId)
-          // Add item to items array
+
+            const uri = "toto";
+        //   const uri = await nft.tokenURI(item.tokenId)  A MODIFIER
+          const response = await fetch(uri);
+          const metadata = await response.json();
+          const totalPrice = await state.marketContract.getTotalPrice(item.itemId);
           items.push({
             totalPrice,
             itemId: item.itemId,
@@ -35,7 +34,7 @@ const AllItems = ({nft, marketplace, account}) => {
     }
   
     const buyMarketItem = async (item) => {
-      await (await marketplace.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
+      await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
       loadMarketplaceItems()
     }
   
@@ -68,7 +67,7 @@ const AllItems = ({nft, marketplace, account}) => {
                     <Card.Footer>
                       <div className='d-grid'>
                         <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
-                          Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                          {/* Buy for {ethers.utils.formatEther(item.totalPrice)} ETH */}
                         </Button>
                       </div>
                     </Card.Footer>

@@ -1,8 +1,10 @@
 import { Navbar, Form, FormControl, Button, Nav, Container, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import React from 'react';
 import marketplace from "./marketplace.png";
 
-const Navigation = ({ web3Handler, account }) => {
+const Navigation = ({ state, web3Handler, account }) => {
 
     return(
             <Navbar collapseOnSelect bg="light" expand="lg">
@@ -14,7 +16,7 @@ const Navigation = ({ web3Handler, account }) => {
                 <Form className="mx-auto w-50 ">
                     <FormControl type="search" placeholder="Search items, and collections" aria-label="Search" style={{borderRadius: "10px"}}/>
                   </Form>
-                <Nav className="d-flex mx-auto" style={{ maxHeight: '100px' }} responsive-navbar-nav>
+                <Nav className="d-flex mx-auto" style={{ maxHeight: '100px' }}>
                     <Nav.Link as={Link} to ="all-items" className='mx-4'>All Items</Nav.Link>
                     <Nav.Link as={Link} to ="collections" className='mx-4'>Collections</Nav.Link>
                     <NavDropdown title="Create" id="createlink" className='mx-4'>

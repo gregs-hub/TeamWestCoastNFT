@@ -1,32 +1,39 @@
 import { useState, useEffect } from 'react'
-import { ethers } from "ethers"
 import { Row, Col, Card, Button } from 'react-bootstrap'
+import React from 'react';
 
-const Collections = ({nft, marketplace, account}) => {
-    const [loading, setLoading] = useState(true)
+const Collections = ({ state }) => {
+
     const [collections, setCollections] = useState([])
-
     const loadMarketplaceCollections = async () => {
-
-      const collectionCount = await marketplace.collectionCount()
+      const collectionCount = await state.marketContract.collectionCount();
+      const mycollec = await state.marketContract.collections(1);
+      console.log(mycollec.owner);
       let collections = [];
+    //   const collection = await state.marketContract.collections(1).call();
+    //     console.log(collection);
+
+    //     state.marketContract.on("Collections", (collectionId, owner, collectionAddress) => {
+    //       console.log(collectionId, owner, collectionAddress);
+    //   });
+
+
       for (let i = 1; i <= collectionCount; i++) {
-        const collection = await marketplace.collections(i)
-        // get uri url from nft contract
-        const uri = await collection.tokenURI(collection.collectionId)
-        // use uri to fetch the nft metadata stored on ipfs 
-        const response = await fetch(uri)
-        const metadata = await response.json()
-        // Add item to items array
-        collections.push({
-            collectionId: collection.itemId,
-            artistName: metadata.artistName,
-            artistSymbol: metadata.artistSymbol,
-            image: metadata.image
-        })
-      }
-      setLoading(false)
-      setCollections(collections)
+        // const listCollection = await state.marketContract.getPastEvents 
+        
+        // const collectionAddr = collection(2);
+        // console.log(collectionAddr)
+    //     const uri = await collection.tokenURI(collection.collectionId);
+    //     const response = await fetch(uri);
+    //     const metadata = await response.json();
+    //     collections.push({
+    //         collectionId: collection.itemId,
+    //         artistName: metadata.artistName,
+    //         artistSymbol: metadata.artistSymbol,
+    //         image: metadata.image
+    //     })
+       }
+    //   setCollections(collections);
     }
   
     const goToCollection = async (item) => {
@@ -35,13 +42,9 @@ const Collections = ({nft, marketplace, account}) => {
     }
   
     useEffect(() => {
-      loadMarketplaceCollections()
+      loadMarketplaceCollections();
     }, [])
-    if (loading) return (
-      <main style={{ padding: "1rem 0" }}>
-        <h2>Loading...</h2>
-      </main>
-    )
+
     return (
       <div className="flex justify-center">
         {collections.length > 0 ?

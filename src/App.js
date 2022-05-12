@@ -2,10 +2,8 @@ import './App.css';
 import Navigation from "./components/Nav";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MarketplaceAbi from './contractsData/Marketplace.json';
-import MarketplaceAddress from './contractsData/Marketplace-address.json';
 import { ethers } from "ethers";
-// import NFTAbi from './contractsData/NFT.json';
-// import NFTAddress from './contractsData/NFT-address.json';
+import MarketplaceAddress from './contractsData/Marketplace-address.json';
 import FactoryAbi from './contractsData/Factory.json';
 import FactoryAddress from './contractsData/Factory-address.json';
 import AllItems from "./components/AllItems";
@@ -15,51 +13,53 @@ import CreateCollection from "./components/CreateCollection";
 import Home from "./components/Home";
 import MyItems from "./components/MyItems";
 import { useState, useEffect } from "react";
+import React from 'react';
 
 function App() {
-  
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const factoryInstance = new ethers.Contract(FactoryAddress.address, FactoryAbi.abi, signer);
+  const marketInstance = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer);
   const [account, setAccount] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [nft, setNFT] = useState({});
-  const [marketplace, setMarketplace] = useState({});
-  const [factory, setFactory] = useState({});
+  const [state, setState] = useState({ 
+    marketContract: marketInstance, 
+    factoryContract: factoryInstance});
 
-  const web3Handler = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    setAccount(accounts[0]);
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    window.ethereum.on('chainChanged', (chainId) => {
-      window.location.reload();
-    })
-
-    window.ethereum.on('accountsChanged', async function (accounts) {
+    const web3Handler = async () => {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setAccount(accounts[0])
-      await web3Handler()
-    })
+      window.ethereum.on('chainChanged', (chainId) => {
+        window.location.reload();
+      })
+  
+      window.ethereum.on('accountsChanged', async function (accounts) {
+        setAccount(accounts[0]);
+        await web3Handler();
+      })
+    }
 
-    loadContracts(signer);
-  }
-  const loadContracts = async (signer) => {
-    const marketplace = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer);
-    setMarketplace(marketplace);
-    // const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer);
-    const factory = new ethers.Contract(FactoryAddress.address, FactoryAbi.abi, signer);
-    setNFT(nft);
-    setFactory(factory);
-    setLoading(false);
-  }
+  // const loadContracts = async (signer) => {
+  //   const marketplace = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer);
+  //   setMarketplace(marketplace);
+  //   console.log(marketplace)
+  //   // const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer);
+  //   const factory = new ethers.Contract(FactoryAddress.address, FactoryAbi.abi, signer);
+  //   setNFT(nft);
+  //   setFactory(factory);
+  //   setLoading(false);
+  // }
 
   return (
    <BrowserRouter>
-     <Navigation web3Handler={web3Handler} account={account} />
+     <Navigation state={state} account={account} web3Handler={web3Handler} />
      <Routes>
-       <Route path='/' element={<Home />}/>
-       <Route path='all-items' element={<AllItems nft={nft} marketplace={marketplace} account={account}/>} />
-       <Route path='collections' element={<Collections nft={nft} marketplace={marketplace} factory={factory}/>} />
-       <Route path='create-item' element={<CreateItem nft={nft} marketplace={marketplace}/>} />
-       <Route path='create-collection' element={<CreateCollection nft={nft} marketplace={marketplace} factory={factory}/>} />
-       <Route path='my-items' element={<MyItems nft={nft} marketplace={marketplace} account={account}/>} />
+       <Route path='/' element={<Home state={state}/>}/>
+       <Route path='all-items' element={<AllItems state={state}/>} />
+       <Route path='collections' element={<Collections state={state}/>} />
+       <Route path='create-item' element={<CreateItem state={state}/>} />
+       <Route path='create-collection' element={<CreateCollection state={state} account={account}/>} />
+       <Route path='my-items' element={<MyItems state={state}/>} />
      </Routes>
    </BrowserRouter>
   );

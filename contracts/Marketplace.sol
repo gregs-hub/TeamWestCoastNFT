@@ -26,7 +26,7 @@ contract Marketplace is ReentrancyGuard {
 
     event Offered(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller);
     event Bought(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller, address indexed buyer);
-
+    event Collections(uint collectionId, address indexed owner, address indexed collectionAddress);
     mapping(uint => Item) public items;
     mapping(uint => Collection) public collections;
 
@@ -46,6 +46,7 @@ contract Marketplace is ReentrancyGuard {
     function addCollection(address _collectionAddress) external nonReentrant {
         collectionCount++;
         collections[collectionCount] = Collection(collectionCount, payable(msg.sender), _collectionAddress);
+        emit Collections(collectionCount, msg.sender, _collectionAddress);
     }
 
     function purchaseItem(uint _itemId) external payable nonReentrant {

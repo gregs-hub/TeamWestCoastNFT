@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { ethers } from "ethers"
 import { Row, Col, Card } from 'react-bootstrap'
+import React from 'react';
 function renderSoldItems(items) {
     return (
       <>
@@ -11,7 +11,7 @@ function renderSoldItems(items) {
               <Card>
                 <Card.Img variant="top" src={item.image} />
                 <Card.Footer>
-                  For {ethers.utils.formatEther(item.totalPrice)} ETH - Recieved {ethers.utils.formatEther(item.price)} ETH
+                  {/* For {ethers.utils.formatEther(item.totalPrice)} ETH - Recieved {ethers.utils.formatEther(item.price)} ETH */}
                 </Card.Footer>
               </Card>
             </Col>
@@ -21,25 +21,26 @@ function renderSoldItems(items) {
     )
   }
 
-const MyItems = ({marketplace, nft, account}) => {
+const MyItems = ({ state }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
     const loadListedItems = async () => {
       // Load all sold items that the user listed
-      const itemCount = await marketplace.itemCount()
+      const itemCount = await state.marketContract.itemCount()
       let listedItems = []
       let soldItems = []
       for (let indx = 1; indx <= itemCount; indx++) {
-        const i = await marketplace.items(indx)
-        if (i.seller.toLowerCase() === account) {
+        const i = await state.marketContract.items(indx)
+        if (i.seller.toLowerCase() === state.account) {
           // get uri url from nft contract
-          const uri = await nft.tokenURI(i.tokenId)
+        //   const uri = await nft.tokenURI(i.tokenId)
+        const uri = "toto";
           // use uri to fetch the nft metadata stored on ipfs 
           const response = await fetch(uri)
           const metadata = await response.json()
           // get total price of item (item price + fee)
-          const totalPrice = await marketplace.getTotalPrice(i.itemId)
+          const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
           // define listed item object
           let item = {
             totalPrice,
@@ -76,7 +77,7 @@ const MyItems = ({marketplace, nft, account}) => {
                 <Col key={idx} className="overflow-hidden">
                   <Card>
                     <Card.Img variant="top" src={item.image} />
-                    <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer>
+                    {/* <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer> */}
                   </Card>
                 </Col>
               ))}

@@ -9,23 +9,25 @@ contract Factory {
 
     uint collectionId;
 
-    mapping (uint => address) collections;
-    mapping(address => address[]) private collectionsByArtist; // An artist can create multiple NFT collections
+    mapping (uint => NFT) collections;
+    // mapping(address => address[]) public collectionsByArtist; // An artist can create multiple NFT collections
 
     // @dev Factory to create NFT smart contract
-    function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri) external payable{
+    function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri) public payable{
        NFT nft = new NFT(_artistName, _artistSymbol, _baseUri);
-       collectionsByArtist[msg.sender].push(payable(nft));
        collectionId++;
-       collections[collectionId] = payable(nft);
+       collections[collectionId] = nft;
     }
 
-    function getCollection(uint _id) external view returns(address) {
+    function getCollection(uint _id) public view returns(NFT) {
         return collections[_id];
     }
-
-    // @dev Get the collections by artist
-    function getCollectionsByArtist(address _address) external view returns(address[] memory) {
-        return collectionsByArtist[_address];
+    function getCollectionId() public view returns(uint) {
+        return collectionId;
     }
+
+    // // @dev Get the collections by artist
+    // function getCollectionsByArtist(address _address) external view returns(address[] memory) {
+    //     return collectionsByArtist[_address];
+    // }
 }
