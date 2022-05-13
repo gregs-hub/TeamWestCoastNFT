@@ -17,7 +17,7 @@ const Navigation = ({ state, web3Handler, account }) => {
                     <FormControl type="search" placeholder="Search items, and collections" aria-label="Search" style={{borderRadius: "10px"}}/>
                   </Form>
                 <Nav className="d-flex mx-auto" style={{ maxHeight: '100px' }}>
-                    <Nav.Link as={Link} to ="all-items" className='mx-4'>All Items</Nav.Link>
+                    {/* <Nav.Link as={Link} to ="all-items" className='mx-4'>All Items</Nav.Link> */}
                     <Nav.Link as={Link} to ="collections" className='mx-4'>Collections</Nav.Link>
                     <NavDropdown title="Create" id="createlink" className='mx-4'>
                       <NavDropdown.Item as={Link} to ="create-item">Item</NavDropdown.Item>

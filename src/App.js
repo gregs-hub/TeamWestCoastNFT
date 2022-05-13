@@ -9,8 +9,8 @@ import FactoryAddress from './contractsData/Factory-address.json';
 import AllItems from "./components/AllItems";
 import Collections from "./components/Collections";
 import CreateItem from "./components/CreateItem";
+import ItemsByCollection from "./components/ItemsByCollection";
 import CreateCollection from "./components/CreateCollection";
-import Home from "./components/Home";
 import MyItems from "./components/MyItems";
 import { useState, useEffect } from "react";
 import React from 'react';
@@ -21,10 +21,13 @@ function App() {
   const signer = provider.getSigner();
   const factoryInstance = new ethers.Contract(FactoryAddress.address, FactoryAbi.abi, signer);
   const marketInstance = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer);
+  const [collections, setCollections] = useState([]);
+  const [collectionExplore, setCollectionExplore] = useState({});
   const [account, setAccount] = useState(null);
   const [state, setState] = useState({ 
     marketContract: marketInstance, 
-    factoryContract: factoryInstance});
+    factoryContract: factoryInstance
+  });
 
     const web3Handler = async () => {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -39,27 +42,17 @@ function App() {
       })
     }
 
-  // const loadContracts = async (signer) => {
-  //   const marketplace = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer);
-  //   setMarketplace(marketplace);
-  //   console.log(marketplace)
-  //   // const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer);
-  //   const factory = new ethers.Contract(FactoryAddress.address, FactoryAbi.abi, signer);
-  //   setNFT(nft);
-  //   setFactory(factory);
-  //   setLoading(false);
-  // }
-
   return (
    <BrowserRouter>
      <Navigation state={state} account={account} web3Handler={web3Handler} />
      <Routes>
-       <Route path='/' element={<Home state={state}/>}/>
-       <Route path='all-items' element={<AllItems state={state}/>} />
-       <Route path='collections' element={<Collections state={state}/>} />
-       <Route path='create-item' element={<CreateItem state={state}/>} />
+       <Route path='/' element={<AllItems state={state} account={account}/>} />
+       <Route path='collections' element={<Collections state={state} collections={collections}
+        setCollections={setCollections} collectionExplore={collections} setCollectionExplore={setCollectionExplore}/>} />
+       <Route path='create-item' element={<CreateItem state={state} collections={collections} setCollections={setCollections} account={account}/>} />
        <Route path='create-collection' element={<CreateCollection state={state} account={account}/>} />
-       <Route path='my-items' element={<MyItems state={state}/>} />
+       <Route path='my-items' element={<MyItems state={state} account={account}/>} />
+       <Route path='collections/items-by-collection' element={<ItemsByCollection state={state} collectionExplore={collectionExplore} account={account}/>} />
      </Routes>
    </BrowserRouter>
   );

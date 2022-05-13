@@ -1,45 +1,70 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Button } from 'react-bootstrap'
+import { Row, Col, Card } from 'react-bootstrap';
+import { ethers } from "ethers";
 import React from 'react';
+// function renderSoldItems(items) {
+//     return (
+//       <>
+//         <h2>Sold</h2>
+//         <Row xs={1} md={2} lg={4} className="g-4 py-3">
+//           {items.map((item, idx) => (
+//             <Col key={idx} className="overflow-hidden">
+//               <Card>
+//                 <Card.Img variant="top" src={item.image} />
+//                 <Card.Footer>
+//                   {/* For {ethers.utils.formatEther(item.totalPrice)} ETH - Recieved {ethers.utils.formatEther(item.price)} ETH */}
+//                 </Card.Footer>
+//               </Card>
+//             </Col>
+//           ))}
+//         </Row>
+//       </>
+//     )
+//   }
 
-function AllItems({ state }) {
-
-    const [loading, setLoading] = useState(true);
-    const [items, setItems] = useState([]);
-    const loadMarketplaceItems = async () => {
-
-      const itemCount = await state.marketContract.itemCount();
-      let items = []
-      for (let i = 1; i <= itemCount; i++) {
-        const item = await state.marketContract.items(i);
-        if (!item.sold) {
-
-            const uri = "toto";
-        //   const uri = await nft.tokenURI(item.tokenId)  A MODIFIER
+const MyItems = ({ state, account }) => {
+    const [loading, setLoading] = useState(true)
+    const [listedItems, setListedItems] = useState([])
+    const [soldItems, setSoldItems] = useState([])
+    const loadListedItems = async () => {
+      // Load all sold items that the user listed
+      const itemCountTemp = await state.marketContract.itemCount();
+      const itemCount = itemCountTemp.toNumber();
+      let listedItems = []
+      let soldItems = []
+      for (let indx = 1; indx <= itemCount; indx++) {
+        const i = await state.marketContract.items(indx);
+        if (!i.sold) {
+          const contractAddr = i.nft;
+          const uri = i.uri;
           const response = await fetch(uri);
           const metadata = await response.json();
-          const totalPrice = await state.marketContract.getTotalPrice(item.itemId);
-          items.push({
+          const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
+          // define listed item object
+          let item = {
             totalPrice,
-            itemId: item.itemId,
-            seller: item.seller,
+            price: i.price,
+            itemId: i.itemId,
+            tokenId: i.tokenId,
             name: metadata.name,
             description: metadata.description,
-            image: metadata.image
-          })
+            image: metadata.image,
+            collectionAddr: contractAddr,
+            collectionId: metadata.collectionId,
+            collectionArtist: metadata.collectionArtist,
+            collectionSymbol: metadata.collectionSymbol
+          }
+          listedItems.push(item)
+          // Add listed item to sold items array if sold
+          if (i.sold) soldItems.push(item)
         }
       }
       setLoading(false)
-      setItems(items)
+      setListedItems(listedItems)
+      setSoldItems(soldItems)
     }
-  
-    const buyMarketItem = async (item) => {
-      await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
-      loadMarketplaceItems()
-    }
-  
     useEffect(() => {
-      loadMarketplaceItems()
+      loadListedItems()
     }, [])
     if (loading) return (
       <main style={{ padding: "1rem 0" }}>
@@ -48,33 +73,27 @@ function AllItems({ state }) {
     )
     return (
       <div className="flex justify-center">
-        {items.length > 0 ?
-          <div className="px-5 container">
-              <div>
-                  <h1>ONGLET FILTER</h1>
-                </div>
-            <Row xs={1} md={2} lg={4} className="g-4 py-5">
-              {items.map((item, idx) => (
+        {listedItems.length > 0 ?
+          <div className="px-5 py-3 container">
+              <h2>Listed</h2>
+            <Row xs={1} md={2} lg={4} className="g-4 py-3">
+              {listedItems.map((item, idx) => (
                 <Col key={idx} className="overflow-hidden">
                   <Card>
                     <Card.Img variant="top" src={item.image} />
-                    <Card.Body color="secondary">
-                      <Card.Title>{item.name}</Card.Title>
-                      <Card.Text>
-                        {item.description}
-                      </Card.Text>
-                    </Card.Body>
-                    <Card.Footer>
-                      <div className='d-grid'>
-                        <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
-                          {/* Buy for {ethers.utils.formatEther(item.totalPrice)} ETH */}
-                        </Button>
+                    <Card.Body>
+                      <div>
+                      Artist: {item.collectionArtist}<br></br>
+                      Collection: {item.collectionSymbol}<br></br>
+                      Mint Number: {item.tokenId.toNumber()}
                       </div>
-                    </Card.Footer>
+                    </Card.Body>
+                    <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer>
                   </Card>
                 </Col>
               ))}
             </Row>
+              {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
           </div>
           : (
             <main style={{ padding: "1rem 0" }}>
@@ -83,6 +102,6 @@ function AllItems({ state }) {
           )}
       </div>
     );
-  }
+}
 
-export default AllItems;
+export default MyItems;

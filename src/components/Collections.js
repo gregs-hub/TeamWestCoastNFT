@@ -1,44 +1,37 @@
 import { useState, useEffect } from 'react'
+import { Link } from "react-router-dom";
 import { Row, Col, Card, Button } from 'react-bootstrap'
 import React from 'react';
 
-const Collections = ({ state }) => {
+const Collections = ({ state, collections, setCollections, collectionExplore, setCollectionExplore }) => {
 
-    const [collections, setCollections] = useState([])
     const loadMarketplaceCollections = async () => {
-      const collectionCount = await state.marketContract.collectionCount();
-      const mycollec = await state.marketContract.collections(1);
-      console.log(mycollec.owner);
+      const collectionCountTemp = await state.marketContract.collectionCount();
+      const collectionCount = collectionCountTemp.toNumber();
       let collections = [];
-    //   const collection = await state.marketContract.collections(1).call();
-    //     console.log(collection);
-
-    //     state.marketContract.on("Collections", (collectionId, owner, collectionAddress) => {
-    //       console.log(collectionId, owner, collectionAddress);
-    //   });
-
 
       for (let i = 1; i <= collectionCount; i++) {
-        // const listCollection = await state.marketContract.getPastEvents 
-        
-        // const collectionAddr = collection(2);
-        // console.log(collectionAddr)
-    //     const uri = await collection.tokenURI(collection.collectionId);
-    //     const response = await fetch(uri);
-    //     const metadata = await response.json();
-    //     collections.push({
-    //         collectionId: collection.itemId,
-    //         artistName: metadata.artistName,
-    //         artistSymbol: metadata.artistSymbol,
-    //         image: metadata.image
-    //     })
-       }
-    //   setCollections(collections);
+        const collection = await state.marketContract.collections(i);
+        const collectionOwner = await collection.owner;
+        const collectionAddress = await collection.collectionAddress;
+        const uri = await state.factoryContract.collectionsURI(i);
+        const response = await fetch(uri);
+        const metadata = await response.json();
+        collections.push({
+            collectionId: collection.collectionId,
+            artistName: metadata.artistName,
+            artistSymbol: metadata.artistSymbol,
+            image: metadata.image,
+            owner: collectionOwner,
+            address: collectionAddress
+        })
+
+        setCollections(collections);
+      }
     }
   
-    const goToCollection = async (item) => {
-    //   await (await marketplace.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
-    //   loadMarketplaceItems()
+    const goToCollection = async (collectionMap) => {
+        setCollectionExplore(collectionMap);
     }
   
     useEffect(() => {
@@ -49,23 +42,23 @@ const Collections = ({ state }) => {
       <div className="flex justify-center">
         {collections.length > 0 ?
           <div className="px-5 container">
-              <div>
+              {/* <div>
                   <h1>ONGLET FILTER</h1>
-                </div>
+                </div> */}
             <Row xs={1} md={2} lg={4} className="g-4 py-5">
-              {collections.map((collection, idx) => (
+              {collections.map((collectionMap, idx) => (
                 <Col key={idx} className="overflow-hidden">
                   <Card>
-                    <Card.Img variant="top" src={collection.image} />
+                    <Card.Img variant="top" src={collectionMap.image} />
                     <Card.Body color="secondary">
-                      <Card.Title>{collection.artistName}</Card.Title>
+                      <Card.Title>{collectionMap.artistName}</Card.Title>
                       <Card.Text>
-                        {collection.artistSymbol}
+                        {collectionMap.artistSymbol}
                       </Card.Text>
                     </Card.Body>
                     <Card.Footer>
                       <div className='d-grid'>
-                        <Button onClick={() => goToCollection(collection)} variant="primary" size="lg">
+                        <Button as={Link} to ="items-by-collection" onClick={() => goToCollection(collectionMap)} variant="primary" size="lg">
                           Explore
                         </Button>
                       </div>

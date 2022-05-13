@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Form, Button } from "react-bootstrap";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
+import NFTAbi from '../contractsData/NFT.json';
+import { ethers } from "ethers";
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateItem = ({ state }) => {
+const CreateItem = ({ state, collections, setCollections, account }) => {
 
     const [image, setImage] = useState('');
     const [price, setPrice] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [collection, setCollection] = useState('');
-
+    const [collectionSelect, setCollectionSelect] = useState('');
+    
+    const [nft, setNft] = useState({});
     const uploadToIPFS = async (event) => {
         event.preventDefault();
         const file = event.target.files[0];
@@ -20,28 +23,62 @@ const CreateItem = ({ state }) => {
         }
     }
 
+    const loadMarketplaceCollections = async () => {
+      const collectionCountTemp = await state.marketContract.collectionCount();
+      const collectionCount = collectionCountTemp.toNumber();
+      let collections = [];
+
+      for (let i = 1; i <= collectionCount; i++) {
+        const collection = await state.marketContract.collections(i);
+        const collectionOwner = await collection.owner.toUpperCase();
+        const collectionAddress = await collection.collectionAddress;
+        const uri = await state.factoryContract.collectionsURI(i);
+        const response = await fetch(uri);
+        const metadata = await response.json();
+        collections.push({
+            collectionId: collection.collectionId,
+            artistName: metadata.artistName,
+            artistSymbol: metadata.artistSymbol,
+            image: metadata.image,
+            owner: collectionOwner,
+            address: collectionAddress
+        })
+
+        setCollections(collections);
+      }
+    }
+
+    useEffect(() => {
+      loadMarketplaceCollections();
+    }, [])
+
+
     const createNFT = async () => {
-        if (!image || !price || !name || !description || !collection) return (<div>probleme createNFt</div>)
+        if (!image || !price || !name || !description || !collectionSelect) return
         try{
-          const result = await client.add(JSON.stringify({image, price, name, description, collection}))
+          const collectionId = collectionSelect[0];
+          const collectionArtist = collectionSelect[1];
+          const collectionSymbol = collectionSelect[2];
+          const collectionAddr = collectionSelect[3];
+          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionAddr}))
+          console.log(image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionAddr);
           mintThenList(result)
         } catch(error) {
           console.log("ipfs uri upload error: ", error)
         }
       }
       const mintThenList = async (result) => {
-        const uri = `https://ipfs.infura.io/ipfs/${result.path}`
-        // mint nft 
+        const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const addr = collectionSelect[3];
+        const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
+        await(await nft.mint()).wait();
+        const id = await nft.tokenCount();
+        await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
+        await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
+       }
 
-        // await(await nft.mint(uri)).wait()
-        // // get tokenId of new nft 
-        // const id = await nft.tokenCount()
-        // // approve marketplace to spend nft
-        // await(await nft.setApprovalForAll(marketplace.address, true)).wait()
-        // // add nft to marketplace
-        // // const listingPrice = ethers.utils.parseEther(price.toString())
-        // await(await marketplace.makeItem(nft.address, id, listingPrice)).wait()
-      }
       return (
         <div className="container-fluid mt-5">
           <div className="row">
@@ -56,10 +93,17 @@ const CreateItem = ({ state }) => {
                   />
                   <Form.Control onChange={(e) => setName(e.target.value)} size="lg" required type="text" placeholder="Name" />
                   <Form.Control onChange={(e) => setDescription(e.target.value)} size="lg" required as="textarea" placeholder="Description" />
-                  <Form.Control onChange={(e) => setCollection(e.target.value)} as="select" size="lg">
+                  <Form.Control onChange={(e) => setCollectionSelect(e.target.value.split(' ; '))} as="select" size="lg">
+
                     <option selected>Select Collection (optional)</option>
-                    <option>1</option>
-                    <option>2</option>
+                    {collections.map((collection, idx) => {
+                      const accountTS = account.toUpperCase();
+                       if (collection.owner == accountTS) {
+                         return <option>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
+                         else return null
+                      
+                      })}
+
                   </Form.Control>
                   <Form.Control onChange={(e) => setPrice(e.target.value)} size="lg" required type="number" placeholder="Price in ETH" />
                   <div className="d-grid px-0">

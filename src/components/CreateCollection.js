@@ -4,7 +4,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client';
 import React from 'react';
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateCollection = ({ state, account }) => {
+const CreateCollection = ({ state, account, setCollection, collection }) => {
     const [image, setImage] = useState('');
     const [artistName, setName] = useState('');
     const [artistSymbol, setSymbol] = useState('');
@@ -29,15 +29,10 @@ const CreateCollection = ({ state, account }) => {
       }
 
       const deployThenList = async (result) => {
-
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
-        console.log(state.factoryContract)
         await(await state.factoryContract.createNFTCollection(artistName, artistSymbol, uri)).wait();
         const id = await state.factoryContract.getCollectionId.call(); 
-        console.log(id);
         const addr = await state.factoryContract.getCollection(id);
-        console.log(id);
-        console.log(addr);
         await(await state.marketContract.addCollection(addr)).wait();
       }
 

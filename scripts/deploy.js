@@ -7,11 +7,15 @@ async function main() {
   const Factory = await ethers.getContractFactory("Factory"); 
   const factory = await Factory.deploy();
 
+  const NFT = await ethers.getContractFactory("NFT");
+
   const Marketplace = await ethers.getContractFactory("Marketplace");
   const marketplace = await Marketplace.deploy(1);
 
+  console.log(NFT.interface);
   saveFrontendFiles(factory , "Factory");
   saveFrontendFiles(marketplace , "Marketplace");
+  saveFrontendFiles(NFT , "NFT");
 }
 
 function saveFrontendFiles(contract, name) {
