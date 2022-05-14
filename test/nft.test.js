@@ -15,12 +15,11 @@ describe("NFTeamWestCoastDapp", async function () {
         async () => {
             //Get contract factories
             const NFT         = await ethers.getContractFactory("NFT")
-            const Marketplace = await ethers.getContractFactory("Marketplace")
+            const Marketplace = await ethers.getContractFactory("Marketplace");
 
             //Get signers
-            //[deployer, addr1, addr2] = await ethers.getSigners();
-            //const [test] = await ethers.getSigners();
-
+            [deployer, addr1, addr2] = await ethers.getSigners();
+            
             //Deploy contracts 
             nft         = await NFT.deploy(nftName, nftSymbol, nftBaseUri);
             marketplace = await Marketplace.deploy(feePercent);
@@ -29,10 +28,21 @@ describe("NFTeamWestCoastDapp", async function () {
     )
 
     describe("Deployment", function() {
+        it("Should see correct addresses", async function() {
+            expect(`${process.env.PUBLIC_KEY_GANACHE1}`).to.equal(deployer.address)
+            console.log(" deployer : " + deployer.address);
+            expect(`${process.env.PUBLIC_KEY_GANACHE2}`).to.equal(addr1.address)
+            console.log(" address 1 : " + addr1.address);
+            expect(`${process.env.PUBLIC_KEY_GANACHE3}`).to.equal(addr2.address)
+            console.log(" address 2 : " + addr2.address);
+        })
+        
         it("Should see correct name and symbol for NFT", async function() {
             expect(await nft.name()).to.equal(nftName)
             expect(await nft.symbol()).to.equal(nftSymbol)
         })
+        
+
     })
 
     describe("Minting", function() {
@@ -40,8 +50,5 @@ describe("NFTeamWestCoastDapp", async function () {
             expect(await nft.balanceOf(addr1.address)).to.equal(1)
         })
     })
-
-
-
 })
 
