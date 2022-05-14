@@ -2,25 +2,6 @@ import { useState, useEffect } from 'react'
 import { Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { ethers } from "ethers";
 import React from 'react';
-// function renderSoldItems(items) {
-//     return (
-//       <>
-//         <h2>Sold</h2>
-//         <Row xs={1} md={2} lg={4} className="g-4 py-3">
-//           {items.map((item, idx) => (
-//             <Col key={idx} className="overflow-hidden">
-//               <Card>
-//                 <Card.Img variant="top" src={item.image} />
-//                 <Card.Footer>
-//                   {/* For {ethers.utils.formatEther(item.totalPrice)} ETH - Recieved {ethers.utils.formatEther(item.price)} ETH */}
-//                 </Card.Footer>
-//               </Card>
-//             </Col>
-//           ))}
-//         </Row>
-//       </>
-//     )
-//   }
 
 const AllItems = ({ state, account }) => {
     const [loading, setLoading] = useState(true)
@@ -100,12 +81,11 @@ const AllItems = ({ state, account }) => {
       <div className="flex justify-center">
         {listedItems.length > 0 ?
           <div className="px-5 py-3 container">
-              <h2>Listed</h2>
             <Row xs={1} md={2} lg={4} className="g-4 py-3">
               {listedItems.map((item, idx) => (
                 <Col key={idx} className="overflow-hidden">
-                  <Card>
-                    <Card.Img variant="top" src={item.image} />
+                  <Card className="d-flex align-items-stretch img-thumbnail">
+                    <Card.Img variant="top" src={item.image} className='images'/>
                     <Card.Body>
                       <div>
                       Artist: {item.collectionArtist}<br></br>
@@ -126,7 +106,7 @@ const AllItems = ({ state, account }) => {
                       <Button onClick={() => changePrice(item, price)} variant="primary" size="md" className="mb-1 mt-2">
                         Change Price
                       </Button>
-                      <Button onClick={() => removeFromMarket(item)} variant="primary" size="md">
+                      <Button onClick={() => removeFromMarket(item)} variant="primary" size="md" className='mb-2'>
                         Remove
                       </Button>
                     </div>}

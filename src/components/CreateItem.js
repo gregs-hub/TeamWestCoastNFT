@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Row, Form, Button } from "react-bootstrap";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import NFTAbi from '../contractsData/NFT.json';
+import SFTAbi from '../contractsData/SFT.json';
 import { ethers } from "ethers";
-import { BigNumber } from "bignumber.js";
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 const CreateItem = ({ state, collections, setCollections, account, setAccount }) => {
@@ -13,7 +13,6 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [collectionSelect, setCollectionSelect] = useState('');
-    // const ethCount = 1000000000000000000;
     const [nft, setNft] = useState({});
     const uploadToIPFS = async (event) => {
         event.preventDefault();
@@ -33,11 +32,13 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         const collection = await state.marketContract.collections(i);
         const collectionOwner = await collection.owner.toUpperCase();
         const collectionAddress = await collection.collectionAddress;
-        const uri = await state.factoryContract.collectionsURI(i);
+        const uri = await collection.uri;
         const response = await fetch(uri);
         const metadata = await response.json();
+        console.log(collection.sft.toString())
         collections.push({
             collectionId: collection.collectionId,
+            isSFT: collection.sft.toString(),
             artistName: metadata.artistName,
             artistSymbol: metadata.artistSymbol,
             image: metadata.image,
@@ -67,8 +68,9 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
           const collectionId = collectionSelect[0];
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
-          const collectionAddr = collectionSelect[3];
-          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionAddr}))
+          const collectionIsSFT = collectionSelect[3];
+          const collectionAddr = collectionSelect[4];
+          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr}))
           mintThenList(result)
         } catch(error) {
           console.log("ipfs uri upload error: ", error)
@@ -78,12 +80,25 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const addr = collectionSelect[3];
-        const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
-        await(await nft.mint()).wait();
-        const id = await nft.tokenCount();
-       await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
-        await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
+        const addr = collectionSelect[4];
+        console.log(addr)
+        console.log(collectionSelect[3])
+        console.log(collectionSelect)
+        if (collectionSelect[3] == "false"){
+          const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
+          await(await nft.mint()).wait();
+          const id = await nft.tokenCount();
+          await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
+          await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
+        } else {
+          const sft = new ethers.Contract(addr, SFTAbi.abi, signer);
+          await(await sft.mint()).wait();
+          const id = await sft.tokenCount();
+          await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
+          await(await state.marketContract.makeItem(sft.address, id, price, uri)).wait();
+
+        }
+        
        }
   
       return (
@@ -104,11 +119,11 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
                   <Form.Control onChange={(e) => setDescription(e.target.value)} size="lg" required as="textarea" placeholder="Description" />
                   <Form.Control onChange={(e) => setCollectionSelect(e.target.value.split(' ; '))} as="select" size="lg">
 
-                    <option value="DEFAULT">Select Collection (optional)</option>
+                    <option value="DEFAULT">Select your Collection</option>
                     {collections.map((collection, idx) => {
 
                        if (collection.owner == account) {
-                         return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
+                         return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.isSFT} ; {collection.address}</option> }
                          else return null
                       
                       })}
@@ -116,9 +131,13 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
                   </Form.Control>
                   <Form.Control onChange={(e) => setPrice(e.target.value)} size="lg" required type="number" placeholder="Price in ETH" />
                   <div className="d-grid px-0">
-                    <Button onClick={createNFT} variant="primary" size="lg">
-                      Create & List NFT!
-                    </Button>
+                  {!image || !price || !name || !description || !collectionSelect
+                    ? <Button disabled onClick={createNFT} variant="primary" size="lg">
+                          Create & List NFT!
+                      </Button>
+                    : <Button onClick={createNFT} variant="primary" size="lg">
+                          Create & List NFT!
+                      </Button>}
                   </div>
                 </Row>
               </div>

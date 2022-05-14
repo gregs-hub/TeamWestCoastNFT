@@ -16,7 +16,7 @@ const MyCollections = ({ state, account, collections, setCollections, collection
         const collectionOwnerTS = collectionOwner.toUpperCase();
         if (collectionOwnerTS == account) {
             const collectionAddress = await collection.collectionAddress;
-            const uri = await state.factoryContract.collectionsURI(i);
+            const uri = await collection.uri;
             const response = await fetch(uri);
             const metadata = await response.json();
             collections.push({
@@ -50,8 +50,8 @@ const MyCollections = ({ state, account, collections, setCollections, collection
             <Row xs={1} md={2} lg={4} className="g-4 py-5">
               {collections.map((collectionMap, idx) => (
                     <Col key={idx} className="overflow-hidden">
-                    <Card>
-                        <Card.Img variant="top" src={collectionMap.image} />
+                    <Card className="d-flex align-items-stretch img-thumbnail">
+                    <Card.Img variant="top" src={collectionMap.image} className='images'/>
                         <Card.Body color="secondary">
                         <Card.Title>{collectionMap.artistName}</Card.Title>
                         <Card.Text>

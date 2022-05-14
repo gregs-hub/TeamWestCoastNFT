@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Button } from 'react-bootstrap'
+import { Row, Col, Card, Button, Form } from 'react-bootstrap'
 import React from 'react';
 import { ethers } from "ethers";
 
@@ -7,9 +7,9 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
 
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
-    const [soldItems, setSoldItems] = useState([])
+    const [price, setPrice] = useState(null)
+
     const loadListedItems = async () => {
-        // Load all sold items that the user listed
         const itemCountTemp = await state.marketContract.itemCount();
         const itemCount = itemCountTemp.toNumber();
         let listedItems = [];
@@ -24,12 +24,12 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
             if (ownerTS == account ) {
                 const metadata = await response.json();
                 const totalPrice = await state.marketContract.getTotalPrice(i.itemId);
-                // define listed item object
                 let item = {
                 totalPrice,
                 price: i.price,
                 itemId: i.itemId,
                 tokenId: i.tokenId,
+                sold: i.sold,
                 owner: ownerTS,
                 name: metadata.name,
                 description: metadata.description,
@@ -45,6 +45,11 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
         }
         setLoading(false)
         setListedItems(listedItems)
+      }
+
+      const sellItem = async (item, price) => {
+        await (await state.marketContract.sellItem(item.itemId, price)).wait();
+        loadListedItems();
       }
 
       useEffect(() => {
@@ -63,8 +68,8 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
               <Row xs={1} md={2} lg={4} className="g-4 py-3">
                 {listedItems.map((item, idx) => (
                   <Col key={idx} className="overflow-hidden">
-                    <Card>
-                      <Card.Img variant="top" src={item.image} />
+                    <Card className="d-flex align-items-stretch img-thumbnail">
+                    <Card.Img variant="top" src={item.image} className='images'/>
                       <Card.Body>
                         <div>
                         Artist: {item.collectionArtist}<br></br>
@@ -73,9 +78,14 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
                         </div>
                       </Card.Body>
                       <Card.Footer>
-                    <div className='d-grid'>
-                        <div>{ethers.utils.formatEther(item.totalPrice)} ETH</div>
-                    </div>
+                      {!item.sold 
+                      ? <div>On sale : {ethers.utils.formatEther(item.totalPrice)} ETH </div>
+                      : <div>
+                          <Form.Control onChange={(e) => setPrice(e.target.value)} size="sm" required type="text" placeholder="Enter selling price" className='mt-2' />
+                          <Button onClick={() => sellItem(item, price)} variant="primary" size="md" className="mt-2">
+                            Sell
+                          </Button>
+                      </div>}
                     </Card.Footer>
                     </Card>
                   </Col>

@@ -64,12 +64,12 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
         <div className="flex justify-center">
           {listedItems.length > 0 ?
             <div className="px-5 py-3 container">
-                <h2>Listed</h2>
+                <h2>Listed</h2>  
               <Row xs={1} md={2} lg={4} className="g-4 py-3">
                 {listedItems.map((item, idx) => (
                   <Col key={idx} className="overflow-hidden">
-                    <Card>
-                      <Card.Img variant="top" src={item.image} />
+                    <Card className="d-flex align-items-stretch img-thumbnail">
+                    <Card.Img variant="top" src={item.image} className='images'/>
                       <Card.Body>
                         <div>
                         Artist: {item.collectionArtist}<br></br>
@@ -83,7 +83,7 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
                       <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
                         Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
                       </Button>
-                    </div> :  <div>It's yours! <br></br>{ethers.utils.formatEther(item.totalPrice)} ETH</div>}
+                    </div> :  <div>It's yours! <br></br>On sale : {ethers.utils.formatEther(item.totalPrice)} ETH</div>}
                   </Card.Footer>
                     </Card>
                   </Col>

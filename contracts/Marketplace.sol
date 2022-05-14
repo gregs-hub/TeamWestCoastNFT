@@ -25,13 +25,17 @@ contract Marketplace is ReentrancyGuard {
         uint collectionId;
         address payable owner;
         address collectionAddress;
+        bool sft;
+        string uri;
     }
 
     event Offered(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller);
     event Bought(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller, address indexed buyer);
-    event Collections(uint collectionId, address indexed owner, address indexed collectionAddress);
+    event Collections(uint collectionId, address indexed owner, address indexed collectionAddress, bool isSFT, string uri);
+
     mapping(uint => Item) public items;
     mapping(uint => Collection) public collections;
+    mapping(address => address[]) public collectionsByArtist; // An artist can create multiple NFT collections
 
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
@@ -48,10 +52,11 @@ contract Marketplace is ReentrancyGuard {
         emit Offered(itemCount, address(_nft), _tokenId, _newPrice, msg.sender);
     }
 
-    function addCollection(address _collectionAddress) external nonReentrant {
+    function addCollection(address _collectionAddress, string memory _uri, bool _isSFT) external nonReentrant {
+        collectionsByArtist[msg.sender].push(_collectionAddress);
+        collections[collectionCount + 1] = Collection(collectionCount + 1, payable(msg.sender), _collectionAddress, _isSFT, _uri);
+        emit Collections(collectionCount, msg.sender, _collectionAddress, _isSFT, _uri);
         collectionCount++;
-        collections[collectionCount] = Collection(collectionCount, payable(msg.sender), _collectionAddress);
-        emit Collections(collectionCount, msg.sender, _collectionAddress);
     }
 
     function purchaseItem(uint _itemId) external payable nonReentrant {
@@ -99,5 +104,13 @@ contract Marketplace is ReentrancyGuard {
 
     function getTotalPrice(uint _itemId) view public returns(uint) {
         return(items[_itemId].price*(100 + feePercent)/100);
+    }
+
+    function getCollectionId() public view returns(uint) {
+        return collectionCount;
+    }
+
+    function getCollection(uint16 _id) public view returns(address) {
+        return collections[_id].collectionAddress;
     }
 }

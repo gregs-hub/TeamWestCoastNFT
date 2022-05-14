@@ -53,7 +53,7 @@ contract NFT is ERC721, Ownable, ReentrancyGuard {
         _safeMint(msg.sender, tokenCount);
     }
 
-    function totalSupply() public view returns(uint) {
+    function totalSupply() external view returns(uint) {
         return tokenCount;
     }
 
