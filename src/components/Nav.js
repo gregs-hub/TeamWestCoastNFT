@@ -23,7 +23,10 @@ const Navigation = ({ state, web3Handler, account }) => {
                       <NavDropdown.Item as={Link} to ="create-item">Item</NavDropdown.Item>
                       <NavDropdown.Item as={Link} to ="create-collection">Collection</NavDropdown.Item>
                     </NavDropdown>
-                    <Nav.Link as={Link} to ="my-items" className='mx-4'>My Items</Nav.Link>
+                    <NavDropdown title="Wallet" id="createlink" className='mx-4'>
+                      <NavDropdown.Item as={Link} to ="my-items">My items</NavDropdown.Item>
+                      <NavDropdown.Item as={Link} to ="my-collections">My Collections</NavDropdown.Item>
+                    </NavDropdown>
                   </Nav>
                   {account ? (
                     <Nav.Link

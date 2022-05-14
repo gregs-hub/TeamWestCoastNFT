@@ -68,8 +68,6 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
           const collectionAddr = collectionSelect[3];
-          // const tempPrice = new BigNumber(price);
-          // const newPrice = tempPrice.multipliedBy(1000000000000000000);
           const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionAddr}))
           mintThenList(result)
         } catch(error) {
@@ -82,12 +80,9 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         const signer = provider.getSigner();
         const addr = collectionSelect[3];
         const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
-        // const tempPrice = new BigNumber(price);
-        // const newPrice = tempPrice.multipliedBy(1000000000000000000);
-        // // const newPrice = price * 1000000000000000000;
         await(await nft.mint()).wait();
         const id = await nft.tokenCount();
-        await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
+       await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
         await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
        }
   

@@ -20,6 +20,7 @@ const Collections = ({ state, collections, setCollections, collectionExplore, se
         collections.push({
             collectionId: collection.collectionId,
             artistName: metadata.artistName,
+            owner: collection.owner,
             artistSymbol: metadata.artistSymbol,
             image: metadata.image,
             owner: collectionOwner,

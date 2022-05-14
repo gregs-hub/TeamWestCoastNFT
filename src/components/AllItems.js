@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { ethers } from "ethers";
 import React from 'react';
 // function renderSoldItems(items) {
@@ -26,6 +26,7 @@ const AllItems = ({ state, account }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
+    const [price, setPrice] = useState(null)
 
     const loadListedItems = async () => {
       // Load all sold items that the user listed
@@ -77,6 +78,16 @@ const AllItems = ({ state, account }) => {
       loadListedItems()
     }
 
+    const changePrice = async (item, price) => {
+      await (await state.marketContract.changePrice(item.itemId, price)).wait()
+      loadListedItems()
+    }
+
+    const removeFromMarket = async (item) => {
+      await (await state.marketContract.removeFromMarketplace(item.itemId)).wait()
+      loadListedItems()
+    }
+
     if (loading) return (
       <main style={{ padding: "1rem 0" }}>
         <h2>Loading...</h2>
@@ -108,7 +119,17 @@ const AllItems = ({ state, account }) => {
                       <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
                         Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
                       </Button>
-                    </div> :  <div>It's yours! <br></br>{ethers.utils.formatEther(item.totalPrice)} ETH</div>}
+                    </div> :  
+                    <div className='d-grid'>
+                      It's yours! Price: {ethers.utils.formatEther(item.totalPrice)} ETH
+                      <Form.Control onChange={(e) => setPrice(e.target.value)} size="sm" required type="text" placeholder="Enter new price" className='mt-2' />
+                      <Button onClick={() => changePrice(item, price)} variant="primary" size="md" className="mb-1 mt-2">
+                        Change Price
+                      </Button>
+                      <Button onClick={() => removeFromMarket(item)} variant="primary" size="md">
+                        Remove
+                      </Button>
+                    </div>}
                   </Card.Footer>
                   </Card>
                 </Col>

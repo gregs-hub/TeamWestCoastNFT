@@ -1,8 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./NFT.sol";
+
 
 contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount;
@@ -13,7 +14,7 @@ contract Marketplace is ReentrancyGuard {
 
     struct Item{
         uint itemId;
-        IERC721 nft;
+        NFT nft;
         uint tokenId;
         uint price;
         address payable owner;
@@ -37,11 +38,12 @@ contract Marketplace is ReentrancyGuard {
         feePercent = _feePercent;
     }
 
-    function makeItem(IERC721 _nft, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
+    function makeItem(NFT _nft, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
         require(_price > 0, "price must be greater than zero");
         itemCount++;
         uint _newPrice = _price * rate;
         _nft.transferFrom(msg.sender, address(this), _tokenId);
+        // _nft.setApprovalForAll(address(this), true);
         items[itemCount] = Item(itemCount, _nft, _tokenId, _newPrice, payable(msg.sender), false, _uri );
         emit Offered(itemCount, address(_nft), _tokenId, _newPrice, msg.sender);
     }
@@ -82,7 +84,7 @@ contract Marketplace is ReentrancyGuard {
         require(item.owner == msg.sender, "You are not the owner of the NFT");
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(!item.sold, "item not on the marketplace");
-        item.price = _newPrice;
+        item.price = _newPrice * rate;
         emit Offered(item.itemId, address(item.nft), item.tokenId, _newPrice, msg.sender);
     }
 

@@ -5,56 +5,55 @@ import { ethers } from "ethers";
 
 function ItemsByCollection({ state, account, collectionExplore, setCollectionExplore }) {
 
-    const [loading, setLoading] = useState(true)
-    const [listedItems, setListedItems] = useState([])
-    const [soldItems, setSoldItems] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [listedItems, setListedItems] = useState([]);
     const loadListedItems = async () => {
         // Load all sold items that the user listed
         const itemCountTemp = await state.marketContract.itemCount();
         const itemCount = itemCountTemp.toNumber();
-        let listedItems = []
-        let soldItems = []
+        let listedItems = [];
+        let soldItems = [];
         for (let indx = 1; indx <= itemCount; indx++) {
           const i = await state.marketContract.items(indx);
           const contractAddr = i.nft;
-          if (collectionExplore.address === contractAddr) {
-            const uri = i.uri;
-            const response = await fetch(uri);
-            const ownerTS = i.owner.toUpperCase();
-            const metadata = await response.json();
-            const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
-            // define listed item object
-            let item = {
-              totalPrice,
-              price: i.price,
-              itemId: i.itemId,
-              tokenId: i.tokenId,
-              owner: ownerTS,
-              name: metadata.name,
-              description: metadata.description,
-              image: metadata.image,
-              collectionAddr: contractAddr,
-              collectionId: metadata.collectionId,
-              collectionArtist: metadata.collectionArtist,
-              collectionSymbol: metadata.collectionSymbol
+          if (collectionExplore.address == contractAddr) {
+            if (!i.sold) {
+              const uri = i.uri;
+              const response = await fetch(uri);
+              const ownerTS = i.owner.toUpperCase();
+              const metadata = await response.json();
+              const totalPrice = await state.marketContract.getTotalPrice(i.itemId);
+              // define listed item object
+              let item = {
+                totalPrice,
+                price: i.price,
+                sold: i.sold,
+                itemId: i.itemId,
+                tokenId: i.tokenId,
+                owner: ownerTS,
+                name: metadata.name,
+                description: metadata.description,
+                image: metadata.image,
+                collectionAddr: contractAddr,
+                collectionId: metadata.collectionId,
+                collectionArtist: metadata.collectionArtist,
+                collectionSymbol: metadata.collectionSymbol
+              }
+              listedItems.push(item);
             }
-            listedItems.push(item)
-            // Add listed item to sold items array if sold
-            if (i.sold) soldItems.push(item)
           }
         }
-        setLoading(false)
-        setListedItems(listedItems)
-        setSoldItems(soldItems)
+        setLoading(false);
+        setListedItems(listedItems);
       }
 
       const buyMarketItem = async (item) => {
         await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
-        loadListedItems()
+        loadListedItems();
       }
 
       useEffect(() => {
-        loadListedItems()
+        loadListedItems();
       }, [])
       if (loading) return (
         <main style={{ padding: "1rem 0" }}>
@@ -90,7 +89,6 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
                   </Col>
                 ))}
               </Row>
-                {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
             </div>
             : (
               <main style={{ padding: "1rem 0" }}>

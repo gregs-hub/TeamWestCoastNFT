@@ -11,12 +11,13 @@ contract Factory {
 
     mapping (uint => NFT) public collections;
     mapping (uint => string) public collectionsURI;
-    // mapping(address => address[]) public collectionsByArtist; // An artist can create multiple NFT collections
+    mapping(address => address[]) public collectionsByArtist; // An artist can create multiple NFT collections
 
     // @dev Factory to create NFT smart contract
     function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri) public payable{
        NFT nft = new NFT(_artistName, _artistSymbol, _baseUri);
        collectionId++;
+       collectionsByArtist[msg.sender].push(address(nft));
        nft.transferOwnership(msg.sender);
        collections[collectionId] = nft;
        collectionsURI[collectionId] = _baseUri;

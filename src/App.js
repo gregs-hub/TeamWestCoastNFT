@@ -10,8 +10,10 @@ import AllItems from "./components/AllItems";
 import Collections from "./components/Collections";
 import CreateItem from "./components/CreateItem";
 import ItemsByCollection from "./components/ItemsByCollection";
+import MyItemsByCollection from "./components/MyItemsByCollection";
 import CreateCollection from "./components/CreateCollection";
 import MyItems from "./components/MyItems";
+import MyCollections from "./components/MyCollections";
 import { useState, useEffect } from "react";
 import React from 'react';
 
@@ -72,6 +74,9 @@ function App() {
        <Route path='create-collection' element={<CreateCollection state={state} account={account}/>} />
        <Route path='my-items' element={<MyItems state={state} account={account} setAccount={setAccount}/>} />
        <Route path='collections/items-by-collection' element={<ItemsByCollection state={state} collectionExplore={collectionExplore} account={account}/>} />
+       <Route path='my-collections' element={<MyCollections state={state} account={account} setAccount={setAccount}
+        setCollections={setCollections} setCollectionExplore={setCollectionExplore} collections={collections}/>} />
+        <Route path='my-collections/my-items-by-collection' element={<MyItemsByCollection state={state} collectionExplore={collectionExplore} account={account}/>} />
      </Routes>
    </BrowserRouter>
   );
