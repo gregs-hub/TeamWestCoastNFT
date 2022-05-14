@@ -39,6 +39,36 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+## Scripts of this Dapp
+
+The main scripts used for this dapp are : 
+
+### Launch dapp
+To launch a server that serves the dapp, just run : 
+
+```sh
+npm run start
+```
+
+### Unit tests
+To run unit tests, follow these steps : 
+
+1) run a local blockcchain with the following command 
+
+```sh
+ganache-cli
+```
+
+2) Take the 3 first private keys that ganache provide and write them in the _.env_ file (PRIVATE_KEY_GANACHE1, ...)
+
+3) Run the following test command : 
+
+```
+npx hardhat test --network ganache
+```
+
+That's it !
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
