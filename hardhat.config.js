@@ -7,11 +7,17 @@ require('dotenv').config();
 
 module.exports = {
   solidity: "0.8.13",
+  paths: {
+    artifacts: "./artifacts",
+    sources: "./contracts",
+    cache: "./cache",
+    tests: "./test"
+  },
   networks: {
 
 	ganache: {
 		url: "http://127.0.0.1:8545",
-		accounts: [`${process.env.PRIVATE_KEY_GANACHE1}`, `${process.env.PRIVATE_KEY_GANACHE2}`]
+		accounts: [`${process.env.PRIVATE_KEY_GANACHE1}`, `${process.env.PRIVATE_KEY_GANACHE2}`, `${process.env.PRIVATE_KEY_GANACHE3}`]
 	},
   	ropsten: {
   		url: `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`,
