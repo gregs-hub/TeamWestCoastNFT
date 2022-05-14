@@ -5,7 +5,7 @@ import NFTAbi from '../contractsData/NFT.json';
 import { ethers } from "ethers";
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateItem = ({ state, collections, setCollections, account }) => {
+const CreateItem = ({ state, collections, setCollections, account, setAccount }) => {
 
     const [image, setImage] = useState('');
     const [price, setPrice] = useState(null);
@@ -49,8 +49,15 @@ const CreateItem = ({ state, collections, setCollections, account }) => {
     }
 
     useEffect(() => {
+      (async function () {
+        try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accountTS = accounts[0].toUpperCase();
+      setAccount(accountTS);
       loadMarketplaceCollections();
-    }, [])
+    } catch (error) {
+      console.error(error);
+    }})();}, [])
 
 
     const createNFT = async () => {
@@ -61,7 +68,6 @@ const CreateItem = ({ state, collections, setCollections, account }) => {
           const collectionSymbol = collectionSelect[2];
           const collectionAddr = collectionSelect[3];
           const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionAddr}))
-          console.log(image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionAddr);
           mintThenList(result)
         } catch(error) {
           console.log("ipfs uri upload error: ", error)
@@ -78,9 +84,10 @@ const CreateItem = ({ state, collections, setCollections, account }) => {
         await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
         await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
        }
-
+  
       return (
         <div className="container-fluid mt-5">
+          {!account ?  <div>Please connect your wallet</div> :
           <div className="row">
             <main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '1000px' }}>
               <div className="content mx-auto">
@@ -91,15 +98,16 @@ const CreateItem = ({ state, collections, setCollections, account }) => {
                     name="file"
                     onChange={uploadToIPFS}
                   />
+                  
                   <Form.Control onChange={(e) => setName(e.target.value)} size="lg" required type="text" placeholder="Name" />
                   <Form.Control onChange={(e) => setDescription(e.target.value)} size="lg" required as="textarea" placeholder="Description" />
                   <Form.Control onChange={(e) => setCollectionSelect(e.target.value.split(' ; '))} as="select" size="lg">
 
-                    <option selected>Select Collection (optional)</option>
+                    <option value="DEFAULT">Select Collection (optional)</option>
                     {collections.map((collection, idx) => {
-                      const accountTS = account.toUpperCase();
-                       if (collection.owner == accountTS) {
-                         return <option>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
+
+                       if (collection.owner == account) {
+                         return <option key={collection.collectionId.toNumber()} value={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
                          else return null
                       
                       })}
@@ -114,7 +122,7 @@ const CreateItem = ({ state, collections, setCollections, account }) => {
                 </Row>
               </div>
             </main>
-          </div>
+          </div>}
         </div>
       );
     }

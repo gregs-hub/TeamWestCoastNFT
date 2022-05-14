@@ -38,6 +38,7 @@ const CreateCollection = ({ state, account, setCollection, collection }) => {
 
       return (
         <div className="container-fluid mt-5">
+          {!account ?  <div>Please connect your wallet</div> :
           <div className="row">
             <main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '1000px' }}>
               <div className="content mx-auto">
@@ -58,7 +59,7 @@ const CreateCollection = ({ state, account, setCollection, collection }) => {
                 </Row>
               </div>
             </main>
-          </div>
+          </div>}
         </div>
       );
     }

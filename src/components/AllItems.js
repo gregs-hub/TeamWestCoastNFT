@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Button } from 'react-bootstrap';
 import { ethers } from "ethers";
 import React from 'react';
 // function renderSoldItems(items) {
@@ -26,6 +26,7 @@ const MyItems = ({ state, account }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
+
     const loadListedItems = async () => {
       // Load all sold items that the user listed
       const itemCountTemp = await state.marketContract.itemCount();
@@ -59,18 +60,28 @@ const MyItems = ({ state, account }) => {
           if (i.sold) soldItems.push(item)
         }
       }
-      setLoading(false)
-      setListedItems(listedItems)
-      setSoldItems(soldItems)
-    }
+          setLoading(false)
+          setListedItems(listedItems)
+          setSoldItems(soldItems)
+      }
+
     useEffect(() => {
       loadListedItems()
     }, [])
+
+    const buyMarketItem = async (item) => {
+      await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
+      loadListedItems()
+    }
+
     if (loading) return (
       <main style={{ padding: "1rem 0" }}>
         <h2>Loading...</h2>
       </main>
     )
+    
+
+
     return (
       <div className="flex justify-center">
         {listedItems.length > 0 ?
@@ -88,7 +99,13 @@ const MyItems = ({ state, account }) => {
                       Mint Number: {item.tokenId.toNumber()}
                       </div>
                     </Card.Body>
-                    <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer>
+                    <Card.Footer>
+                    <div className='d-grid'>
+                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
+                        Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                      </Button>
+                    </div>
+                  </Card.Footer>
                   </Card>
                 </Col>
               ))}

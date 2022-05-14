@@ -41,6 +41,24 @@ function App() {
         await web3Handler();
       })
     }
+    useEffect(() => {
+      (async function () {
+        try {
+          window.ethereum.on('chainChanged', (chainId) => {
+            window.location.reload();
+          })
+      
+          window.ethereum.on('accountsChanged', async function (accounts) {
+            const accountTS = accounts[0].toUpperCase();
+            setAccount(accountTS);
+            window.location.reload();
+          })
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accountTS = accounts[0].toUpperCase();
+      setAccount(accountTS);
+    } catch (error) {
+      console.error(error);
+    }})();}, [])
 
   return (
    <BrowserRouter>
@@ -49,7 +67,8 @@ function App() {
        <Route path='/' element={<AllItems state={state} account={account}/>} />
        <Route path='collections' element={<Collections state={state} collections={collections}
         setCollections={setCollections} collectionExplore={collections} setCollectionExplore={setCollectionExplore}/>} />
-       <Route path='create-item' element={<CreateItem state={state} collections={collections} setCollections={setCollections} account={account}/>} />
+       <Route path='create-item' element={<CreateItem state={state} setAccount={setAccount}
+       collections={collections} setCollections={setCollections} account={account}/>} />
        <Route path='create-collection' element={<CreateCollection state={state} account={account}/>} />
        <Route path='my-items' element={<MyItems state={state} account={account}/>} />
        <Route path='collections/items-by-collection' element={<ItemsByCollection state={state} collectionExplore={collectionExplore} account={account}/>} />
