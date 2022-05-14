@@ -70,7 +70,7 @@ function App() {
        <Route path='create-item' element={<CreateItem state={state} setAccount={setAccount}
        collections={collections} setCollections={setCollections} account={account}/>} />
        <Route path='create-collection' element={<CreateCollection state={state} account={account}/>} />
-       <Route path='my-items' element={<MyItems state={state} account={account}/>} />
+       <Route path='my-items' element={<MyItems state={state} account={account} setAccount={setAccount}/>} />
        <Route path='collections/items-by-collection' element={<ItemsByCollection state={state} collectionExplore={collectionExplore} account={account}/>} />
      </Routes>
    </BrowserRouter>

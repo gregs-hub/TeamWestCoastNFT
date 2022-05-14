@@ -9,13 +9,14 @@ contract Marketplace is ReentrancyGuard {
     uint public immutable feePercent;
     uint public itemCount;
     uint public collectionCount;
+    uint public rate = 1000000000000000000;
 
     struct Item{
         uint itemId;
         IERC721 nft;
         uint tokenId;
         uint price;
-        address payable seller;
+        address payable owner;
         bool sold;
         string uri;
     }
@@ -39,9 +40,10 @@ contract Marketplace is ReentrancyGuard {
     function makeItem(IERC721 _nft, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
         require(_price > 0, "price must be greater than zero");
         itemCount++;
+        uint _newPrice = _price * rate;
         _nft.transferFrom(msg.sender, address(this), _tokenId);
-        items[itemCount] = Item(itemCount, _nft, _tokenId, _price, payable(msg.sender), false, _uri );
-        emit Offered(itemCount, address(_nft), _tokenId, _price, msg.sender);
+        items[itemCount] = Item(itemCount, _nft, _tokenId, _newPrice, payable(msg.sender), false, _uri );
+        emit Offered(itemCount, address(_nft), _tokenId, _newPrice, msg.sender);
     }
 
     function addCollection(address _collectionAddress) external nonReentrant {
@@ -56,18 +58,41 @@ contract Marketplace is ReentrancyGuard {
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
         require(!item.sold, "item already sold");
-        item.seller.transfer(item.price);
+        item.owner.transfer(item.price);
         feeAccount.transfer(_totalPrice - item.price);
         item.sold = true;
         item.nft.transferFrom(address(this), msg.sender, item.tokenId);
-        emit Bought( _itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
+        item.owner = payable(msg.sender);
+        emit Bought( _itemId, address(item.nft), item.tokenId, item.price, item.owner, msg.sender);
     }
 
-    function sellItem(uint _itemId) external payable nonReentrant {
-        uint _totalPrice = getTotalPrice(_itemId);
+    function sellItem(uint _itemId, uint _price) external payable nonReentrant {
         Item storage item = items[_itemId];
+        require(item.owner == msg.sender, "You are not the owner of the NFT");
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
-        _nft.transferFrom(msg.sender, address(this), _tokenId);
+        require(item.sold, "item already on the marketplace");
+        item.sold = false;
+        item.price = _price * rate;
+        item.nft.transferFrom(msg.sender, address(this), item.tokenId);
+        emit Offered(item.itemId, address(item.nft), item.tokenId, item.price, msg.sender);
+    }
+
+    function changePrice(uint _itemId, uint _newPrice) external payable nonReentrant {
+        Item storage item = items[_itemId];
+        require(item.owner == msg.sender, "You are not the owner of the NFT");
+        require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
+        require(!item.sold, "item not on the marketplace");
+        item.price = _newPrice;
+        emit Offered(item.itemId, address(item.nft), item.tokenId, _newPrice, msg.sender);
+    }
+
+    function removeFromMarketplace(uint _itemId) external payable nonReentrant {
+        Item storage item = items[_itemId];
+        require(item.owner == msg.sender, "You are not the owner of the NFT");
+        require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
+        require(!item.sold, "item not on the marketplace");
+        item.sold = true;
+        item.nft.transferFrom(address(this), msg.sender, item.tokenId);
     }
 
     function getTotalPrice(uint _itemId) view public returns(uint) {

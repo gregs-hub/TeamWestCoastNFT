@@ -3,6 +3,7 @@ import { Row, Form, Button } from "react-bootstrap";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import NFTAbi from '../contractsData/NFT.json';
 import { ethers } from "ethers";
+import { BigNumber } from "bignumber.js";
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 const CreateItem = ({ state, collections, setCollections, account, setAccount }) => {
@@ -12,7 +13,7 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [collectionSelect, setCollectionSelect] = useState('');
-    
+    // const ethCount = 1000000000000000000;
     const [nft, setNft] = useState({});
     const uploadToIPFS = async (event) => {
         event.preventDefault();
@@ -67,6 +68,8 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
           const collectionAddr = collectionSelect[3];
+          // const tempPrice = new BigNumber(price);
+          // const newPrice = tempPrice.multipliedBy(1000000000000000000);
           const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionAddr}))
           mintThenList(result)
         } catch(error) {
@@ -79,6 +82,9 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         const signer = provider.getSigner();
         const addr = collectionSelect[3];
         const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
+        // const tempPrice = new BigNumber(price);
+        // const newPrice = tempPrice.multipliedBy(1000000000000000000);
+        // // const newPrice = price * 1000000000000000000;
         await(await nft.mint()).wait();
         const id = await nft.tokenCount();
         await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
@@ -107,7 +113,7 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
                     {collections.map((collection, idx) => {
 
                        if (collection.owner == account) {
-                         return <option key={collection.collectionId.toNumber()} value={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
+                         return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.address}</option> }
                          else return null
                       
                       })}

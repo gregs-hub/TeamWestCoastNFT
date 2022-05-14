@@ -25,9 +25,9 @@ const Collections = ({ state, collections, setCollections, collectionExplore, se
             owner: collectionOwner,
             address: collectionAddress
         })
-
-        setCollections(collections);
       }
+        setCollections(collections);
+      
     }
   
     const goToCollection = async (collectionMap) => {

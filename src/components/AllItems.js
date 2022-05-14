@@ -22,7 +22,7 @@ import React from 'react';
 //     )
 //   }
 
-const MyItems = ({ state, account }) => {
+const AllItems = ({ state, account }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
@@ -31,6 +31,7 @@ const MyItems = ({ state, account }) => {
       // Load all sold items that the user listed
       const itemCountTemp = await state.marketContract.itemCount();
       const itemCount = itemCountTemp.toNumber();
+      
       let listedItems = []
       let soldItems = []
       for (let indx = 1; indx <= itemCount; indx++) {
@@ -38,6 +39,7 @@ const MyItems = ({ state, account }) => {
         if (!i.sold) {
           const contractAddr = i.nft;
           const uri = i.uri;
+          const ownerTS = i.owner.toUpperCase();
           const response = await fetch(uri);
           const metadata = await response.json();
           const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
@@ -47,6 +49,7 @@ const MyItems = ({ state, account }) => {
             price: i.price,
             itemId: i.itemId,
             tokenId: i.tokenId,
+            owner: ownerTS,
             name: metadata.name,
             description: metadata.description,
             image: metadata.image,
@@ -81,7 +84,7 @@ const MyItems = ({ state, account }) => {
     )
     
 
-
+      
     return (
       <div className="flex justify-center">
         {listedItems.length > 0 ?
@@ -100,11 +103,12 @@ const MyItems = ({ state, account }) => {
                       </div>
                     </Card.Body>
                     <Card.Footer>
+                      {item.owner != account ? 
                     <div className='d-grid'>
-                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
+                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
                         Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
                       </Button>
-                    </div>
+                    </div> :  <div>It's yours! <br></br>{ethers.utils.formatEther(item.totalPrice)} ETH</div>}
                   </Card.Footer>
                   </Card>
                 </Col>
@@ -121,4 +125,4 @@ const MyItems = ({ state, account }) => {
     );
 }
 
-export default MyItems;
+export default AllItems;

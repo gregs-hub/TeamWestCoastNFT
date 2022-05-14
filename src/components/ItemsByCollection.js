@@ -8,21 +8,19 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
-    console.log(collectionExplore)
     const loadListedItems = async () => {
         // Load all sold items that the user listed
         const itemCountTemp = await state.marketContract.itemCount();
         const itemCount = itemCountTemp.toNumber();
         let listedItems = []
         let soldItems = []
-        console.log(itemCount)
         for (let indx = 1; indx <= itemCount; indx++) {
           const i = await state.marketContract.items(indx);
           const contractAddr = i.nft;
-          console.log(collectionExplore.address, contractAddr)
           if (collectionExplore.address === contractAddr) {
             const uri = i.uri;
             const response = await fetch(uri);
+            const ownerTS = i.owner.toUpperCase();
             const metadata = await response.json();
             const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
             // define listed item object
@@ -31,6 +29,7 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
               price: i.price,
               itemId: i.itemId,
               tokenId: i.tokenId,
+              owner: ownerTS,
               name: metadata.name,
               description: metadata.description,
               image: metadata.image,
@@ -47,6 +46,11 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
         setLoading(false)
         setListedItems(listedItems)
         setSoldItems(soldItems)
+      }
+
+      const buyMarketItem = async (item) => {
+        await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
+        loadListedItems()
       }
 
       useEffect(() => {
@@ -74,7 +78,14 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
                         Mint Number: {item.tokenId.toNumber()}
                         </div>
                       </Card.Body>
-                      <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer>
+                      <Card.Footer>
+                      {item.owner != account ? 
+                    <div className='d-grid'>
+                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
+                        Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                      </Button>
+                    </div> :  <div>It's yours! <br></br>{ethers.utils.formatEther(item.totalPrice)} ETH</div>}
+                  </Card.Footer>
                     </Card>
                   </Col>
                 ))}

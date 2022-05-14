@@ -22,19 +22,22 @@ import React from 'react';
 //     )
 //   }
 
-const MyItems = ({ state, account }) => {
+const MyItems = ({ state, account, setAccount }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
     const [soldItems, setSoldItems] = useState([])
+
     const loadListedItems = async () => {
       // Load all sold items that the user listed
       const itemCountTemp = await state.marketContract.itemCount();
       const itemCount = itemCountTemp.toNumber();
-      let listedItems = []
-      let soldItems = []
+      let listedItems = [];
+      let soldItems = [];
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accountTS = accounts[0].toUpperCase();
       for (let indx = 1; indx <= itemCount; indx++) {
         const i = await state.marketContract.items(indx);
-        if (i.seller.toLowerCase() === account) {
+        if (i.owner.toUpperCase() == accountTS) {
           const contractAddr = i.nft;
           const uri = i.uri;
           const response = await fetch(uri);
@@ -63,9 +66,17 @@ const MyItems = ({ state, account }) => {
       setListedItems(listedItems)
       setSoldItems(soldItems)
     }
+
     useEffect(() => {
-      loadListedItems()
-    }, [])
+      (async function () {
+        try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accountTS = accounts[0].toUpperCase();
+      setAccount(accountTS);
+      loadListedItems();
+    } catch (error) {
+      console.error(error);
+    }})();}, [])
     if (loading) return (
       <main style={{ padding: "1rem 0" }}>
         <h2>Loading...</h2>
