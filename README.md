@@ -40,6 +40,10 @@ npx hardhat test --network ganache
 
 That's it !
 
+### TEST RESULTS
+
+![](https://ibb.co/jH2Xg0T)
+
 # Authors
 
  * Mathieu Bourkel
