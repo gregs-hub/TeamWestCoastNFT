@@ -45,9 +45,9 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
             owner: collectionOwner,
             address: collectionAddress
         })
-
-        setCollections(collections);
       }
+        setCollections(collections);
+      
     }
 
     useEffect(() => {
@@ -86,8 +86,10 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         console.log(collectionSelect)
         if (collectionSelect[3] == "false"){
           const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
+          console.log(nft)
           await(await nft.mint()).wait();
-          const id = await nft.tokenCount();
+          const id = await nft.getCount();
+          console.log(id)
           await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
           await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
         } else {

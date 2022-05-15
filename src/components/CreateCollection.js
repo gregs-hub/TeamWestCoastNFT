@@ -32,14 +32,18 @@ const CreateCollection = ({ state, account, setCollection, collection }) => {
 
       const deployThenList = async (result) => {
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
-        const hexaRandomString = ethers.utils.formatBytes32String((Math.random().toString(32)));
+        //const hexaRandomString = ethers.utils.formatBytes32String((Math.random().toString(32)));
         if (NFT == "SFT") {
-          const instance = await(await state.factorySFTContract.createSFTCollection(uri, hexaRandomString)).wait();
-          const addr = instance.to;
+          await(await state.factorySFTContract.createSFTCollection(uri)).wait();
+          const id = await state.factorySFTContract.getCount();
+          const addr = state.factorySFTContract.getCollection(id);
           await(await state.marketContract.addCollection(addr, uri, true)).wait();
         } else {
-          const instance = await(await state.factoryContract.createNFTCollection(artistName, artistSymbol, uri, hexaRandomString)).wait();
-          const addr = instance.to;
+          await(await state.factoryContract.createNFTCollection(artistName, artistSymbol, uri)).wait();
+          const id = await state.factoryContract.getCount();
+          console.log(id)
+          const addr = await state.factoryContract.getCollection(id);
+          console.log(addr)
           await(await state.marketContract.addCollection(addr, uri, false)).wait();
           }
         

@@ -47,7 +47,6 @@ contract Marketplace is ReentrancyGuard {
         itemCount++;
         uint _newPrice = _price * rate;
         _nft.transferFrom(msg.sender, address(this), _tokenId);
-        // _nft.setApprovalForAll(address(this), true);
         items[itemCount] = Item(itemCount, _nft, _tokenId, _newPrice, payable(msg.sender), false, _uri );
         emit Offered(itemCount, address(_nft), _tokenId, _newPrice, msg.sender);
     }

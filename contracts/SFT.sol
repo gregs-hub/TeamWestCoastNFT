@@ -35,4 +35,8 @@ contract SFT is ERC1155, Ownable, ReentrancyGuard {
         return tokenCount;
     }
 
+    function getCount() public view returns (uint) {
+        return tokenCount;
+    }
+
 }

@@ -1,44 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Factory.sol": {
-      "lastModificationDate": 1652566069843,
-      "contentHash": "af11c89690e2633803cf87ae832618af",
-      "sourceName": "contracts/Factory.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./NFT.sol",
-        "./Marketplace.sol"
-      ],
-      "versionPragmas": [
-        "0.8.13"
-      ],
-      "artifacts": [
-        "Factory"
-      ]
-    },
     "/home/mathieu/projetWestCoast/projetwestcoast/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
       "lastModificationDate": 1652270669078,
       "contentHash": "21b9f3bdb3e60f56ea81361c37420136",
@@ -587,88 +549,9 @@
         "IERC20"
       ]
     },
-    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Marketplace.sol": {
-      "lastModificationDate": 1652567472403,
-      "contentHash": "9d67192256abc5ae524d7eb27b7c24f8",
-      "sourceName": "contracts/Marketplace.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/security/ReentrancyGuard.sol",
-        "./NFT.sol"
-      ],
-      "versionPragmas": [
-        "0.8.13"
-      ],
-      "artifacts": [
-        "Marketplace"
-      ]
-    },
-    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/NFT.sol": {
-      "lastModificationDate": 1652561799143,
-      "contentHash": "a1183b83a7785a4245184fef90b41a6d",
-      "sourceName": "contracts/NFT.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@openzeppelin/contracts/security/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/finance/PaymentSplitter.sol",
-        "@openzeppelin/contracts/utils/Counters.sol"
-      ],
-      "versionPragmas": [
-        "0.8.13"
-      ],
-      "artifacts": [
-        "NFT"
-      ]
-    },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/SFT.sol": {
-      "lastModificationDate": 1652561327853,
-      "contentHash": "f687d2c7ffa686b174f0ecffb0bca3be",
+      "lastModificationDate": 1652604194640,
+      "contentHash": "c2e34fb186edb774c38ff58b4b79cdbb",
       "sourceName": "contracts/SFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -860,8 +743,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/FactorySFT.sol": {
-      "lastModificationDate": 1652567587333,
-      "contentHash": "37d6f4a699b8b12cb34566f8944704de",
+      "lastModificationDate": 1652600064540,
+      "contentHash": "7c02aae0e104119e7b9927afae6c9ce3",
       "sourceName": "contracts/FactorySFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -887,14 +770,201 @@
         }
       },
       "imports": [
-        "./SFT.sol",
-        "./Marketplace.sol"
+        "./SFT.sol"
       ],
       "versionPragmas": [
         "0.8.13"
       ],
       "artifacts": [
         "FactorySFT"
+      ]
+    },
+    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Factory.sol": {
+      "lastModificationDate": 1652608135290,
+      "contentHash": "541b8c3c9a6d394376e3324d58307807",
+      "sourceName": "contracts/Factory.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./NFT.sol"
+      ],
+      "versionPragmas": [
+        "0.8.13"
+      ],
+      "artifacts": [
+        "Factory"
+      ]
+    },
+    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/NFT.sol": {
+      "lastModificationDate": 1652608421890,
+      "contentHash": "0226fe11c5e33e5ed2fe0dd02c1ed7aa",
+      "sourceName": "contracts/NFT.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/finance/PaymentSplitter.sol",
+        "@openzeppelin/contracts/utils/Counters.sol"
+      ],
+      "versionPragmas": [
+        "0.8.13"
+      ],
+      "artifacts": [
+        "NFT"
+      ]
+    },
+    "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Marketplace.sol": {
+      "lastModificationDate": 1652608633330,
+      "contentHash": "59de9947ecf238c9512584d683895651",
+      "sourceName": "contracts/Marketplace.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "./NFT.sol"
+      ],
+      "versionPragmas": [
+        "0.8.13"
+      ],
+      "artifacts": [
+        "Marketplace"
+      ]
+    },
+    "/home/mathieu/projetWestCoast/projetwestcoast/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+      "lastModificationDate": 1652595742910,
+      "contentHash": "be27cb63ce8e469db3306a210450385f",
+      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../utils/AddressUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.2"
+      ],
+      "artifacts": [
+        "Initializable"
+      ]
+    },
+    "/home/mathieu/projetWestCoast/projetwestcoast/node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+      "lastModificationDate": 1652595742800,
+      "contentHash": "b70d2e0552ab1f44f7e44b5f8379c358",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.1"
+      ],
+      "artifacts": [
+        "AddressUpgradeable"
       ]
     }
   }
