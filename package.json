@@ -55,6 +55,7 @@
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "chai": "^4.3.6",
+    "chai-ethers-bn": "^0.0.3",
     "crypto-browserify": "^3.12.0",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.5",
