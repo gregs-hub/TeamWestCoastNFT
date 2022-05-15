@@ -14,7 +14,7 @@ contract NFT is ERC721, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     string public baseURI;
 
-    uint public tokenCount = 1;
+    uint public tokenCount;
 
     // uint[] private _teamShares = [33, 33, 34];
 
@@ -48,7 +48,7 @@ contract NFT is ERC721, Ownable, ReentrancyGuard {
     }
 
     // @dev Simple internal minting function
-    function mint() public nonReentrant {
+    function mint() public nonReentrant onlyOwner {
         tokenCount++;
         _safeMint(msg.sender, tokenCount);
     }

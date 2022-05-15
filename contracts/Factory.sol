@@ -18,12 +18,11 @@ contract Factory {
     //     return collections[collectionCount];
     //  }
 
-     function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri) external {
+     function createNFTCollection(address _marketplace, string memory _artistName, string memory _artistSymbol, string memory _baseUri) external {
         NFT nft = new NFT(_artistName, _artistSymbol, _baseUri);
         collectionCount++;
         collections[collectionCount] = address(nft);
-        nft.transferOwnership(msg.sender);
-        //nft.setApprovalForAll(_marketplace, true);
+        nft.transferOwnership(_marketplace);
      }
 
      function getCollection(uint _id) external view returns(address){

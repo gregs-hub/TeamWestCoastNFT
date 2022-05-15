@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Row, Form, Button } from "react-bootstrap";
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import React from 'react';
+import NFTAbi from '../contractsData/NFT.json';
+import SFTAbi from '../contractsData/SFT.json';
 import { ethers } from "ethers";
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
@@ -39,7 +41,7 @@ const CreateCollection = ({ state, account, setCollection, collection }) => {
           const addr = state.factorySFTContract.getCollection(id);
           await(await state.marketContract.addCollection(addr, uri, true)).wait();
         } else {
-          await(await state.factoryContract.createNFTCollection(artistName, artistSymbol, uri)).wait();
+          await(await state.factoryContract.createNFTCollection(state.marketContract.address, artistName, artistSymbol, uri)).wait();
           const id = await state.factoryContract.getCount();
           console.log(id)
           const addr = await state.factoryContract.getCollection(id);

@@ -2,10 +2,11 @@
 pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./NFT.sol";
 
 
-contract Marketplace is ReentrancyGuard {
+contract Marketplace is ReentrancyGuard, IERC721Receiver {
     address payable public immutable feeAccount;
     uint public immutable feePercent;
     uint public itemCount;
@@ -16,6 +17,7 @@ contract Marketplace is ReentrancyGuard {
         uint itemId;
         NFT nft;
         uint tokenId;
+        uint collectionId;
         uint price;
         address payable owner;
         bool sold;
@@ -29,7 +31,7 @@ contract Marketplace is ReentrancyGuard {
         string uri;
     }
 
-    event Offered(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller);
+    event Offered(uint itemId, address indexed nft, uint collectionId, uint tokenId, uint price, address indexed seller);
     event Bought(uint itemId, address indexed nft, uint tokenId, uint price, address indexed seller, address indexed buyer);
     event Collections(uint collectionId, address indexed owner, address indexed collectionAddress, bool isSFT, string uri);
 
@@ -42,20 +44,26 @@ contract Marketplace is ReentrancyGuard {
         feePercent = _feePercent;
     }
 
-    function makeItem(NFT _nft, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
+    function makeItem(NFT _nft, uint _collectionId, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
         require(_price > 0, "price must be greater than zero");
+        require(collections[_collectionId].owner == payable(msg.sender), "you are not the collection owner");
         itemCount++;
         uint _newPrice = _price * rate;
-        _nft.transferFrom(msg.sender, address(this), _tokenId);
-        items[itemCount] = Item(itemCount, _nft, _tokenId, _newPrice, payable(msg.sender), false, _uri );
-        emit Offered(itemCount, address(_nft), _tokenId, _newPrice, msg.sender);
+        _nft.mint();
+        items[itemCount] = Item(itemCount, _nft, _tokenId, _collectionId, _newPrice, payable(msg.sender), false, _uri );
+        emit Offered(itemCount, address(_nft), _collectionId, _tokenId, _newPrice, msg.sender);
     }
 
     function addCollection(address _collectionAddress, string memory _uri, bool _isSFT) external nonReentrant {
         collectionsByArtist[msg.sender].push(_collectionAddress);
-        collections[collectionCount + 1] = Collection(collectionCount + 1, payable(msg.sender), _collectionAddress, _isSFT, _uri);
-        emit Collections(collectionCount, msg.sender, _collectionAddress, _isSFT, _uri);
         collectionCount++;
+        collections[collectionCount] = Collection(collectionCount, payable(msg.sender), _collectionAddress, _isSFT, _uri);
+        emit Collections(collectionCount, msg.sender, _collectionAddress, _isSFT, _uri);
+        
+    }
+
+     function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
     function purchaseItem(uint _itemId) external payable nonReentrant {
@@ -80,7 +88,7 @@ contract Marketplace is ReentrancyGuard {
         item.sold = false;
         item.price = _price * rate;
         item.nft.transferFrom(msg.sender, address(this), item.tokenId);
-        emit Offered(item.itemId, address(item.nft), item.tokenId, item.price, msg.sender);
+        emit Offered(item.itemId, address(item.nft), item.collectionId, item.tokenId, item.price, msg.sender);
     }
 
     function changePrice(uint _itemId, uint _newPrice) external payable nonReentrant {
@@ -89,7 +97,7 @@ contract Marketplace is ReentrancyGuard {
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(!item.sold, "item not on the marketplace");
         item.price = _newPrice * rate;
-        emit Offered(item.itemId, address(item.nft), item.tokenId, _newPrice, msg.sender);
+        emit Offered(item.itemId, address(item.nft), item.collectionId, item.tokenId, _newPrice, msg.sender);
     }
 
     function removeFromMarketplace(uint _itemId) external payable nonReentrant {

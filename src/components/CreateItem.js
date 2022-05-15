@@ -87,16 +87,16 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         if (collectionSelect[3] == "false"){
           const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
           console.log(nft)
-          await(await nft.mint()).wait();
-          const id = await nft.getCount();
-          console.log(id)
+          // await(await nft.mint()).wait();
+          const idTemp = await nft.getCount();
+          const tokenId = idTemp.toNumber() + 1;
           await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
-          await(await state.marketContract.makeItem(nft.address, id, price, uri)).wait();
+          await(await state.marketContract.makeItem(nft.address, collectionSelect[0], tokenId, price, uri)).wait();
         } else {
           const sft = new ethers.Contract(addr, SFTAbi.abi, signer);
           await(await sft.mint()).wait();
           const id = await sft.tokenCount();
-          await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
+          //await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
           await(await state.marketContract.makeItem(sft.address, id, price, uri)).wait();
 
         }
