@@ -10,11 +10,11 @@ contract Factory {
     uint public collectionCount;
     mapping (uint => address) public collections;
 
-    function createNFTCollection(address _marketplace, string memory _artistName, string memory _artistSymbol, string memory _baseUri, bytes32 _salt) external returns(address){ 
+    function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri, bytes32 _salt) external returns(address){ 
         NFT nft = new NFT{salt: _salt}(_artistName, _artistSymbol, _baseUri);
         collectionCount++;
         collections[collectionCount] = address(nft);
-        nft.transferOwnership(_marketplace);
+        nft.transferOwnership(msg.sender);
         return collections[collectionCount];
      }
 

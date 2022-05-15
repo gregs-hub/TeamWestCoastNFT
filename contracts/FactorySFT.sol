@@ -10,7 +10,7 @@ contract FactorySFT {
     uint public collectionCount;
     mapping (uint => address) public collections;
 
-    function createSFTCollection(address _marketplace, string memory _baseUri, bytes32 _salt) external returns(address){ 
+    function createSFTCollection(string memory _baseUri, bytes32 _salt) external returns(address){ 
         SFT sft = new SFT{salt: _salt}(_baseUri);
         collectionCount++;
         collections[collectionCount] = address(sft);

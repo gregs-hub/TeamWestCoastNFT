@@ -14,7 +14,7 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [collectionSelect, setCollectionSelect] = useState('');
-    const [nft, setNft] = useState({});
+
     const uploadToIPFS = async (event) => {
         event.preventDefault();
         const file = event.target.files[0];
@@ -67,11 +67,13 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         if (collectionSelect[3] == "SFT"){
           try{
             const collectionId = collectionSelect[0];
+          const owner = collections.owner;
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
           const collectionIsSFT = collectionSelect[3];
           const collectionAddr = collectionSelect[4];
-          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr, amount}))
+          const result = await client.add(JSON.stringify({image, price, name, 
+            description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr, owner, amount}))
             mintThenList(result)
           } catch(error) {
             console.log("ipfs uri upload error: ", error)
@@ -79,11 +81,14 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         } else if (collectionSelect[3] == "NFT"){ 
           try{
             const collectionId = collectionSelect[0];
+            const owner = collections.owner;
+            console.log(owner)
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
           const collectionIsSFT = collectionSelect[3];
           const collectionAddr = collectionSelect[4];
-          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr}))
+          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect,
+             collectionId, collectionArtist, collectionSymbol, collectionIsSFT, owner, collectionAddr}))
             mintThenList(result)
           } catch(error) {
             console.log("ipfs uri upload error: ", error)
@@ -112,9 +117,10 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         console.log(collectionSelect)
         if (collectionSelect[3] == "NFT"){
           const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
-          console.log(nft)
+          await(await nft.mint()).wait();
           const idTemp = await nft.getCount();
-          const tokenId = idTemp.toNumber() + 1;
+          const tokenId = idTemp.toNumber();
+          console.log(state.marketContract.address);
           await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
           await(await state.marketContract.makeItem(tokenId, collectionSelect[0], price, nft.address, uri)).wait();
         } else if (collectionSelect[3] == "SFT"){

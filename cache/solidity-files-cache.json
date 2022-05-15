@@ -743,8 +743,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/FactorySFT.sol": {
-      "lastModificationDate": 1652624561990,
-      "contentHash": "7dac8ccfff39d02444d7c2cb89d01179",
+      "lastModificationDate": 1652640722760,
+      "contentHash": "4210024fe5a219e09fe0fd14c3943289",
       "sourceName": "contracts/FactorySFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -780,8 +780,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Factory.sol": {
-      "lastModificationDate": 1652629321640,
-      "contentHash": "6a7f40da2d3bf2b6ede6200f90323f05",
+      "lastModificationDate": 1652640707600,
+      "contentHash": "6b2e3eb4b13ebacab9d0eb59cdc250d6",
       "sourceName": "contracts/Factory.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -857,8 +857,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Marketplace.sol": {
-      "lastModificationDate": 1652630531060,
-      "contentHash": "8a8a8ab24ea1e812ad5a9f26639d6ac9",
+      "lastModificationDate": 1652641827530,
+      "contentHash": "a520a621ca46a392760a25fd8152147b",
       "sourceName": "contracts/Marketplace.sol",
       "solcConfig": {
         "version": "0.8.13",

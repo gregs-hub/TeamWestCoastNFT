@@ -53,7 +53,6 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         require(collections[_collectionId].owner == payable(msg.sender), "you are not the collection owner");
         itemCount++;
         uint _newPrice = _price * rate;
-        _nft.mint();
         items[itemCount] = Item(itemCount, _tokenId, _collectionId, _newPrice, 1, _nft, payable(msg.sender), false, false, _uri );
         emit Offered(itemCount, address(_nft), _collectionId, _tokenId, _newPrice, msg.sender);
     }
@@ -79,16 +78,16 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         return this.onERC721Received.selector;
     }
 
-    function purchaseItem(uint _itemId) external payable nonReentrant {
+    function purchaseItem(uint _itemId) external payable {
         uint _totalPrice = getTotalPrice(_itemId);
         Item storage item = items[_itemId];
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
-        require(!item.sold, "item already sold");
-        item.owner.transfer(item.price);
+        require(!item.sold, "item already sold");   
+        item.owner.transfer(item.price); 
         feeAccount.transfer(_totalPrice - item.price);
-        item.sold = true;
-        item.nft.transferFrom(address(this), msg.sender, item.tokenId);
+        item.sold = true; 
+        item.nft.transferFrom(item.owner, msg.sender, item.tokenId);
         item.owner = payable(msg.sender);
         emit Bought( _itemId, address(item.nft), item.tokenId, item.price, item.owner, msg.sender);
     }
@@ -100,7 +99,7 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         require(item.sold, "item already on the marketplace");
         item.sold = false;
         item.price = _price * rate;
-        item.nft.transferFrom(msg.sender, address(this), item.tokenId);
+        item.nft.transferFrom(item.owner, address(this), item.tokenId);
         emit Offered(item.itemId, address(item.nft), item.collectionId, item.tokenId, item.price, msg.sender);
     }
 
@@ -118,8 +117,8 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         require(item.owner == msg.sender, "You are not the owner of the NFT");
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(!item.sold, "item not on the marketplace");
+        item.nft.transferFrom(address(this), item.owner, item.tokenId);
         item.sold = true;
-        NFT(item.nft).transferFrom(address(this), msg.sender, item.tokenId);
     }
 
     function getTotalPrice(uint _itemId) view public returns(uint) {
