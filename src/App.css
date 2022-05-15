@@ -9,6 +9,11 @@ body {
   font-family: 'Coiny', sans-serif
 }
 
+.footer {
+  color: white;
+}
+
+
 .App {
   text-align: center;
 }
