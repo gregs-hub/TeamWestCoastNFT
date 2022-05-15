@@ -44,9 +44,6 @@ const MyCollections = ({ state, account, collections, setCollections, collection
       <div className="flex justify-center">
         {collections.length > 0 ?
           <div className="px-5 container">
-              {/* <div>
-                  <h1>ONGLET FILTER</h1>
-                </div> */}
             <Row xs={1} md={2} lg={4} className="g-4 py-5">
               {collections.map((collectionMap, idx) => (
                     <Col key={idx} className="overflow-hidden">

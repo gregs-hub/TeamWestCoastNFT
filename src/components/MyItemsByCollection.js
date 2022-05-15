@@ -17,10 +17,12 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
         for (let indx = 1; indx <= itemCount; indx++) {
           const i = await state.marketContract.items(indx);
           const contractAddr = i.nft;
+
           if (collectionExplore.address == contractAddr) {
             const uri = i.uri;
             const response = await fetch(uri);
             const ownerTS = i.owner.toUpperCase();
+
             if (ownerTS == account ) {
                 const metadata = await response.json();
                 const totalPrice = await state.marketContract.getTotalPrice(i.itemId);
@@ -91,7 +93,6 @@ function MyItemsByCollection({ state, account, collectionExplore, setCollectionE
                   </Col>
                 ))}
               </Row>
-                {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
             </div>
             : (
               <div className="row coiny">

@@ -7,18 +7,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
-// @author TeamWestCoast
+/// @author TeamWestCoast
+/// @title The erc721 contract who is called by the factory
 contract SFT is ERC1155, Ownable, ReentrancyGuard {
 
     string public baseURI;
-
     uint public tokenCount;
 
-    constructor(string memory _baseUri) ERC1155(_baseUri) ReentrancyGuard() {
-
-    }        
-
-    // @dev Simple internal minting function
+    constructor(string memory _baseUri) ERC1155(_baseUri) ReentrancyGuard() {}
+      
     function mint(uint _amount) external nonReentrant onlyOwner {
         tokenCount++;
         _mint(msg.sender, tokenCount, _amount, "");

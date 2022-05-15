@@ -550,8 +550,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/SFT.sol": {
-      "lastModificationDate": 1652624244490,
-      "contentHash": "7023256c49e47fdda2f6e6077319c047",
+      "lastModificationDate": 1652645401310,
+      "contentHash": "4fb5f9d6553625e7bb470de903d10943",
       "sourceName": "contracts/SFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -743,8 +743,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/FactorySFT.sol": {
-      "lastModificationDate": 1652640722760,
-      "contentHash": "4210024fe5a219e09fe0fd14c3943289",
+      "lastModificationDate": 1652645322040,
+      "contentHash": "f9efa69b971303ce2a5a142995d9408c",
       "sourceName": "contracts/FactorySFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -780,8 +780,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Factory.sol": {
-      "lastModificationDate": 1652640707600,
-      "contentHash": "6b2e3eb4b13ebacab9d0eb59cdc250d6",
+      "lastModificationDate": 1652645282720,
+      "contentHash": "238a20d7d53775e2f5769fc99b7466e6",
       "sourceName": "contracts/Factory.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -817,8 +817,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/NFT.sol": {
-      "lastModificationDate": 1652619361420,
-      "contentHash": "6022408e0e3430e904d89fed1041b30a",
+      "lastModificationDate": 1652645415950,
+      "contentHash": "b7163385b4723afeb7f6faee403c7b51",
       "sourceName": "contracts/NFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -857,8 +857,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Marketplace.sol": {
-      "lastModificationDate": 1652641827530,
-      "contentHash": "a520a621ca46a392760a25fd8152147b",
+      "lastModificationDate": 1652646675510,
+      "contentHash": "8ec24f3f742e1e42d156c87d3893e437",
       "sourceName": "contracts/Marketplace.sol",
       "solcConfig": {
         "version": "0.8.13",

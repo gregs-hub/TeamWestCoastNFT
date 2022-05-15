@@ -4,12 +4,18 @@ pragma solidity 0.8.13;
 
 import "./SFT.sol";
 
-// @author TeamWestCoast
+/// @title The factory for deploy ERC721 contracts
+/// @author TeamWestCoast
 contract FactorySFT {
 
     uint public collectionCount;
+
+    /// @dev mapping to get the contratcs address with an ID
     mapping (uint => address) public collections;
 
+    /// @dev function to create a ERC1155 contract, call by the front
+    /// @param _baseUri The link for the IPFS datas
+    /// @param _salt salt for the create2 
     function createSFTCollection(string memory _baseUri, bytes32 _salt) external returns(address){ 
         SFT sft = new SFT{salt: _salt}(_baseUri);
         collectionCount++;

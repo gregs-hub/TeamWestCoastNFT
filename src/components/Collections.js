@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button } from 'react-bootstrap'
 import React from 'react';
@@ -11,12 +11,11 @@ const Collections = ({ state, collections, setCollections, collectionExplore, se
       let collections = [];
 
       for (let i = 1; i <= collectionCount; i++) {
+
         const collection = await state.marketContract.collections(i);
         const collectionOwner = await collection.owner;
         const collectionAddress = await collection.collectionAddress;
-        console.log(collection)
         const uri = await collection.uri;
-        console.log(uri)
         const response = await fetch(uri);
         const metadata = await response.json();
         collections.push({
@@ -45,9 +44,6 @@ const Collections = ({ state, collections, setCollections, collectionExplore, se
       <div className="flex justify-center">
         {collections.length > 0 ?
           <div className="px-5 container">
-              {/* <div>
-                  <h1>ONGLET FILTER</h1>
-                </div> */}
             <Row xs={1} md={2} lg={4} className="g-4 py-5">
               {collections.map((collectionMap, idx) => (
                 <Col key={idx} className="overflow-hidden">

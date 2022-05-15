@@ -9,12 +9,10 @@ const AllItems = ({ state, account }) => {
     const [price, setPrice] = useState(null)
 
     const loadListedItems = async () => {
-      // Load all sold items that the user listed
+
       const itemCountTemp = await state.marketContract.itemCount();
       const itemCount = itemCountTemp.toNumber();
-      console.log(itemCount)
-      let listedItems = []
-      let soldItems = []
+      let listedItems = [];
       for (let indx = 1; indx <= itemCount; indx++) {
         const i = await state.marketContract.items(indx);
         if (!i.sold) {
@@ -24,10 +22,7 @@ const AllItems = ({ state, account }) => {
           const response = await fetch(uri);
           const metadata = await response.json();
           const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
-          // define listed item object
-          console.log(ownerTS)
-          console.log(account)
-          console.log(i.owner)
+
           let item = {
             totalPrice,
             price: i.price,
@@ -45,8 +40,6 @@ const AllItems = ({ state, account }) => {
             collectionSymbol: metadata.collectionSymbol
           }
           listedItems.push(item)
-          // Add listed item to sold items array if sold
-          if (i.sold) soldItems.push(item)
         }
       }
           setLoading(false)
@@ -125,7 +118,6 @@ const AllItems = ({ state, account }) => {
                 </Col>
               ))}
             </Row>
-              {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
           </div>
           : (
             <div className="row coiny">

@@ -66,28 +66,28 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
     const createNFT = async () => {
         if (collectionSelect[3] == "SFT"){
           try{
-            const collectionId = collectionSelect[0];
-          const owner = collections.owner;
-          const collectionArtist = collectionSelect[1];
-          const collectionSymbol = collectionSelect[2];
-          const collectionIsSFT = collectionSelect[3];
-          const collectionAddr = collectionSelect[4];
-          const result = await client.add(JSON.stringify({image, price, name, 
-            description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr, owner, amount}))
-            mintThenList(result)
+              const collectionId = collectionSelect[0];
+              const owner = collections.owner;
+              const collectionArtist = collectionSelect[1];
+              const collectionSymbol = collectionSelect[2];
+              const collectionIsSFT = collectionSelect[3];
+              const collectionAddr = collectionSelect[4];
+              const result = await client.add(JSON.stringify({image, price, name, 
+                description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr, owner, amount}))
+                mintThenList(result)
           } catch(error) {
-            console.log("ipfs uri upload error: ", error)
+                console.log("ipfs uri upload error: ", error)
           }
         } else if (collectionSelect[3] == "NFT"){ 
           try{
+
             const collectionId = collectionSelect[0];
             const owner = collections.owner;
-            console.log(owner)
-          const collectionArtist = collectionSelect[1];
-          const collectionSymbol = collectionSelect[2];
-          const collectionIsSFT = collectionSelect[3];
-          const collectionAddr = collectionSelect[4];
-          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect,
+            const collectionArtist = collectionSelect[1];
+            const collectionSymbol = collectionSelect[2];
+            const collectionIsSFT = collectionSelect[3];
+            const collectionAddr = collectionSelect[4];
+            const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect,
              collectionId, collectionArtist, collectionSymbol, collectionIsSFT, owner, collectionAddr}))
             mintThenList(result)
           } catch(error) {
@@ -96,44 +96,30 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         }
       }
 
-      const createSFT = async () => {
-        if (!image || !price || !name || !description || !collectionSelect || !amount) return
-        try{
-          const collectionId = collectionSelect[0];
-          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, amount}))
-          mintThenList(result)
-        } catch(error) {
-          console.log("ipfs uri upload error: ", error)
-        }
-      }
-
       const mintThenList = async (result) => {
+
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const addr = collectionSelect[4];
-        console.log(addr)
-        console.log(collectionSelect[3])
-        console.log(collectionSelect)
+
         if (collectionSelect[3] == "NFT"){
           const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
           await(await nft.mint()).wait();
           const idTemp = await nft.getCount();
           const tokenId = idTemp.toNumber();
-          console.log(state.marketContract.address);
           await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
           await(await state.marketContract.makeItem(tokenId, collectionSelect[0], price, nft.address, uri)).wait();
+
         } else if (collectionSelect[3] == "SFT"){
           const sft = new ethers.Contract(addr, SFTAbi.abi, signer);
-          console.log(sft)
           await(await sft.mint(amount)).wait();
           const idTemp = await sft.getCount();
-          const tokenId = idTemp.toNumber() + 1;
+          const tokenId = idTemp.toNumber();
           await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
           await(await state.marketContract.makeItemSFT(tokenId, collectionSelect[0], amount, price, sft.address, uri)).wait();
 
-        } else { return<div>PB SFTNFT</div>}
-        
+          } else return 
        }
   
       return (

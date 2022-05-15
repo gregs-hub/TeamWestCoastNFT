@@ -10,7 +10,7 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
     const [price, setPrice] = useState(null)
 
     const loadListedItems = async () => {
-        // Load all sold items that the user listed
+
         const itemCountTemp = await state.marketContract.itemCount();
         const itemCount = itemCountTemp.toNumber();
         let listedItems = [];
@@ -25,7 +25,7 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
               const ownerTS = i.owner.toUpperCase();
               const metadata = await response.json();
               const totalPrice = await state.marketContract.getTotalPrice(i.itemId);
-              // define listed item object
+
               let item = {
                 totalPrice,
                 price: i.price,

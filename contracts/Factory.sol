@@ -4,12 +4,21 @@ pragma solidity 0.8.13;
 
 import "./NFT.sol";
 
-// @author TeamWestCoast
+/// @title The factory for deploy ERC721 contracts
+/// @author TeamWestCoast
+
 contract Factory {
 
     uint public collectionCount;
+
+    /// @dev mapping to get the contratcs address with an ID
     mapping (uint => address) public collections;
 
+    /// @dev function to create a ERC721 contract, call by the front
+    /// @param _artistName Name of the collection artist
+    /// @param _artistSymbol Name for the collection
+    /// @param _baseUri The link for the IPFS datas
+    /// @param _salt salt for the create2 
     function createNFTCollection(string memory _artistName, string memory _artistSymbol, string memory _baseUri, bytes32 _salt) external returns(address){ 
         NFT nft = new NFT{salt: _salt}(_artistName, _artistSymbol, _baseUri);
         collectionCount++;
