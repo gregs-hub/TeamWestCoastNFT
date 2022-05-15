@@ -118,7 +118,7 @@ const AllItems = ({ state, account }) => {
               {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
           </div>
           : (
-            <div className="row">
+            <div className="row coiny">
               <div className="col-md-8 mx-auto text-center text-warning mt-5">
                 <h3 className=''>No listed NFTS!</h3>
               </div>
