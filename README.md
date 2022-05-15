@@ -51,6 +51,6 @@ That's it !
 
 # Authors
 
- * Mathieu Bourkel
- * Gilles Bruno
- * Grégory Seiller
+ * Mathieu Bourkel  ; Front
+ * Gilles Bruno ; Smart contracts et tests
+ * Grégory Seiller ; Infra, ERC1155, gestion des collections 
