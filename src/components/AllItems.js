@@ -118,9 +118,11 @@ const AllItems = ({ state, account }) => {
               {/* {soldItems.length > 0 && renderSoldItems(soldItems)} */}
           </div>
           : (
-            <main style={{ padding: "1rem 0" }}>
-              <h2>No listed assets</h2>
-            </main>
+            <div className="row">
+              <div className="col-md-8 mx-auto text-center text-warning mt-5">
+                <h3 className=''>No listed NFTS!</h3>
+              </div>
+            </div>
           )}
       </div>
     );
