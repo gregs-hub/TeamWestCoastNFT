@@ -10,6 +10,7 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
 
     const [image, setImage] = useState('');
     const [price, setPrice] = useState(null);
+    const [amount, setAmount] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [collectionSelect, setCollectionSelect] = useState('');
@@ -38,7 +39,7 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         console.log(collection.sft.toString())
         collections.push({
             collectionId: collection.collectionId,
-            isSFT: collection.sft.toString(),
+            isSFT: collection.sft,
             artistName: metadata.artistName,
             artistSymbol: metadata.artistSymbol,
             image: metadata.image,
@@ -63,19 +64,44 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
 
 
     const createNFT = async () => {
-        if (!image || !price || !name || !description || !collectionSelect) return
-        try{
-          const collectionId = collectionSelect[0];
+        if (collectionSelect[3] == "SFT"){
+          try{
+            const collectionId = collectionSelect[0];
+          const collectionArtist = collectionSelect[1];
+          const collectionSymbol = collectionSelect[2];
+          const collectionIsSFT = collectionSelect[3];
+          const collectionAddr = collectionSelect[4];
+          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr, amount}))
+            mintThenList(result)
+          } catch(error) {
+            console.log("ipfs uri upload error: ", error)
+          }
+        } else if (collectionSelect[3] == "NFT"){ 
+          try{
+            const collectionId = collectionSelect[0];
           const collectionArtist = collectionSelect[1];
           const collectionSymbol = collectionSelect[2];
           const collectionIsSFT = collectionSelect[3];
           const collectionAddr = collectionSelect[4];
           const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, collectionId, collectionArtist, collectionSymbol, collectionIsSFT, collectionAddr}))
+            mintThenList(result)
+          } catch(error) {
+            console.log("ipfs uri upload error: ", error)
+          }
+        }
+      }
+
+      const createSFT = async () => {
+        if (!image || !price || !name || !description || !collectionSelect || !amount) return
+        try{
+          const collectionId = collectionSelect[0];
+          const result = await client.add(JSON.stringify({image, price, name, description, collectionSelect, amount}))
           mintThenList(result)
         } catch(error) {
           console.log("ipfs uri upload error: ", error)
         }
       }
+
       const mintThenList = async (result) => {
         const uri = `https://ipfs.infura.io/ipfs/${result.path}`;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -84,22 +110,23 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
         console.log(addr)
         console.log(collectionSelect[3])
         console.log(collectionSelect)
-        if (collectionSelect[3] == "false"){
+        if (collectionSelect[3] == "NFT"){
           const nft = new ethers.Contract(addr, NFTAbi.abi, signer);
           console.log(nft)
-          // await(await nft.mint()).wait();
           const idTemp = await nft.getCount();
           const tokenId = idTemp.toNumber() + 1;
           await(await nft.setApprovalForAll(state.marketContract.address, true)).wait();
-          await(await state.marketContract.makeItem(nft.address, collectionSelect[0], tokenId, price, uri)).wait();
-        } else {
+          await(await state.marketContract.makeItem(tokenId, collectionSelect[0], price, nft.address, uri)).wait();
+        } else if (collectionSelect[3] == "SFT"){
           const sft = new ethers.Contract(addr, SFTAbi.abi, signer);
-          await(await sft.mint()).wait();
-          const id = await sft.tokenCount();
-          //await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
-          await(await state.marketContract.makeItem(sft.address, id, price, uri)).wait();
+          console.log(sft)
+          await(await sft.mint(amount)).wait();
+          const idTemp = await sft.getCount();
+          const tokenId = idTemp.toNumber() + 1;
+          await(await sft.setApprovalForAll(state.marketContract.address, true)).wait();
+          await(await state.marketContract.makeItemSFT(tokenId, collectionSelect[0], amount, price, sft.address, uri)).wait();
 
-        }
+        } else { return<div>PB SFTNFT</div>}
         
        }
   
@@ -125,21 +152,27 @@ const CreateItem = ({ state, collections, setCollections, account, setAccount })
                     {collections.map((collection, idx) => {
 
                        if (collection.owner == account) {
-                         return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; {collection.isSFT} ; {collection.address}</option> }
-                         else return null
+                         if(collection.isSFT) {
+                            return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; SFT ; {collection.address}</option> 
+                       } else { return <option key={collection.collectionId.toNumber()}>{collection.collectionId.toNumber()} ; {collection.artistName} ; {collection.artistSymbol} ; NFT ; {collection.address}</option>}}
+                            else return null
                       
                       })}
 
                   </Form.Control>
+                  {collectionSelect[3] == "SFT" ? 
+                  <Form.Control onChange={(e) => setAmount(e.target.value)} size="lg" required type="text" placeholder="Amount" />
+                  : <div></div>}
                   <Form.Control onChange={(e) => setPrice(e.target.value)} size="lg" required type="number" placeholder="Price in ETH" />
                   <div className="d-grid px-0">
-                  {!image || !price || !name || !description || !collectionSelect
-                    ? <Button disabled onClick={createNFT} variant="primary" size="lg">
+                  {(!image || !price || !name || !description || !collectionSelect)    
+                     ? <Button disabled onClick={createNFT} variant="primary" size="lg">
                           Create & List NFT!
                       </Button>
                     : <Button onClick={createNFT} variant="primary" size="lg">
-                          Create & List NFT!
-                      </Button>}
+                      Create & List NFT!
+                  </Button>  
+                        }
                   </div>
                 </Row>
               </div>

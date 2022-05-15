@@ -6,14 +6,13 @@ import React from 'react';
 const AllItems = ({ state, account }) => {
     const [loading, setLoading] = useState(true)
     const [listedItems, setListedItems] = useState([])
-    const [soldItems, setSoldItems] = useState([])
     const [price, setPrice] = useState(null)
 
     const loadListedItems = async () => {
       // Load all sold items that the user listed
       const itemCountTemp = await state.marketContract.itemCount();
       const itemCount = itemCountTemp.toNumber();
-      
+      console.log(itemCount)
       let listedItems = []
       let soldItems = []
       for (let indx = 1; indx <= itemCount; indx++) {
@@ -26,6 +25,9 @@ const AllItems = ({ state, account }) => {
           const metadata = await response.json();
           const totalPrice = await state.marketContract.getTotalPrice(i.itemId)
           // define listed item object
+          console.log(ownerTS)
+          console.log(account)
+          console.log(i.owner)
           let item = {
             totalPrice,
             price: i.price,
@@ -35,6 +37,8 @@ const AllItems = ({ state, account }) => {
             name: metadata.name,
             description: metadata.description,
             image: metadata.image,
+            isSFT: i.isSFT,
+            amount: metadata.amount,
             collectionAddr: contractAddr,
             collectionId: metadata.collectionId,
             collectionArtist: metadata.collectionArtist,
@@ -47,7 +51,6 @@ const AllItems = ({ state, account }) => {
       }
           setLoading(false)
           setListedItems(listedItems)
-          setSoldItems(soldItems)
       }
 
     useEffect(() => {
@@ -92,13 +95,20 @@ const AllItems = ({ state, account }) => {
                       Collection: {item.collectionSymbol}<br></br>
                       Mint Number: {item.tokenId.toNumber()}
                       </div>
+                      {item.isSFT 
+                      ? <div>Amount: {item.amount}</div> 
+                      : <div></div> }
                     </Card.Body>
                     <Card.Footer>
                       {item.owner != account ? 
-                    <div className='d-grid'>
-                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
-                        Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
-                      </Button>
+                    <div className='d-grid'> 
+                      {item.isSFT 
+                      ? <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
+                            Buy 1 for {ethers.utils.formatEther(item.totalPrice)} ETH
+                      </Button> 
+                      : <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
+                            Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                        </Button>}
                     </div> :  
                     <div className='d-grid'>
                       It's yours! Price: {ethers.utils.formatEther(item.totalPrice)} ETH

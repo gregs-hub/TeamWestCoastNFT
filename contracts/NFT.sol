@@ -6,14 +6,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 // @author TeamWestCoast
 contract NFT is ERC721, Ownable, ReentrancyGuard {
 
-    using Counters for Counters.Counter;
     string public baseURI;
-
     uint public tokenCount;
 
     // uint[] private _teamShares = [33, 33, 34];
@@ -32,12 +29,6 @@ contract NFT is ERC721, Ownable, ReentrancyGuard {
         setBaseURI(_baseUri);
     }
 
-    // @dev The msg.sensder must be the first one who called the function
-    modifier onlyAccounts() {
-        require(msg.sender == tx.origin, "Not allowed origin of the call");
-        _;
-    }
-
     // @dev set state variable base URI : Can be set after deploy the contract in case of URI error
     function setBaseURI(string memory _uri) public onlyOwner{
         baseURI = _uri;
@@ -51,10 +42,6 @@ contract NFT is ERC721, Ownable, ReentrancyGuard {
     function mint() public nonReentrant onlyOwner {
         tokenCount++;
         _safeMint(msg.sender, tokenCount);
-    }
-
-    function totalSupply() external view returns(uint) {
-        return tokenCount;
     }
 
     function getCount() public view returns (uint) {

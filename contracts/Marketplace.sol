@@ -4,6 +4,7 @@ pragma solidity 0.8.13;
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./NFT.sol";
+import "./SFT.sol";
 
 
 contract Marketplace is ReentrancyGuard, IERC721Receiver {
@@ -14,15 +15,18 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
     uint public rate = 1000000000000000000;
 
     struct Item{
-        uint itemId;
-        NFT nft;
+        uint itemId; 
         uint tokenId;
         uint collectionId;
         uint price;
+        uint amount;
+        NFT nft;
         address payable owner;
         bool sold;
+        bool isSFT;
         string uri;
     }
+        
     struct Collection{
         uint collectionId;
         address payable owner;
@@ -44,13 +48,22 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         feePercent = _feePercent;
     }
 
-    function makeItem(NFT _nft, uint _collectionId, uint _tokenId, uint _price, string memory _uri) external nonReentrant {
+    function makeItem(uint _tokenId, uint _collectionId, uint _price, NFT _nft, string memory _uri) external nonReentrant {
         require(_price > 0, "price must be greater than zero");
         require(collections[_collectionId].owner == payable(msg.sender), "you are not the collection owner");
         itemCount++;
         uint _newPrice = _price * rate;
         _nft.mint();
-        items[itemCount] = Item(itemCount, _nft, _tokenId, _collectionId, _newPrice, payable(msg.sender), false, _uri );
+        items[itemCount] = Item(itemCount, _tokenId, _collectionId, _newPrice, 1, _nft, payable(msg.sender), false, false, _uri );
+        emit Offered(itemCount, address(_nft), _collectionId, _tokenId, _newPrice, msg.sender);
+    }
+
+    function makeItemSFT(uint _tokenId, uint _collectionId, uint16 _amount, uint _price, NFT _nft, string memory _uri) external nonReentrant {
+        require(_price > 0, "price must be greater than zero");
+        require(collections[_collectionId].owner == payable(msg.sender), "you are not the collection owner");
+        itemCount++;
+        uint _newPrice = _price * rate;
+        items[itemCount] = Item(itemCount, _tokenId, _collectionId, _newPrice, _amount, _nft, payable(msg.sender), false, true, _uri );
         emit Offered(itemCount, address(_nft), _collectionId, _tokenId, _newPrice, msg.sender);
     }
 
@@ -106,7 +119,7 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         require(_itemId > 0 && _itemId <= itemCount, "item doesnt exists");
         require(!item.sold, "item not on the marketplace");
         item.sold = true;
-        item.nft.transferFrom(address(this), msg.sender, item.tokenId);
+        NFT(item.nft).transferFrom(address(this), msg.sender, item.tokenId);
     }
 
     function getTotalPrice(uint _itemId) view public returns(uint) {
@@ -117,7 +130,7 @@ contract Marketplace is ReentrancyGuard, IERC721Receiver {
         return collectionCount;
     }
 
-    function getCollection(uint16 _id) public view returns(address) {
+    function getCollection(uint _id) public view returns(address) {
         return collections[_id].collectionAddress;
     }
 }

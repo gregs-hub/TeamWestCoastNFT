@@ -550,8 +550,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/SFT.sol": {
-      "lastModificationDate": 1652604194640,
-      "contentHash": "c2e34fb186edb774c38ff58b4b79cdbb",
+      "lastModificationDate": 1652624244490,
+      "contentHash": "7023256c49e47fdda2f6e6077319c047",
       "sourceName": "contracts/SFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -580,7 +580,7 @@
         "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/security/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Counters.sol"
+        "@openzeppelin/contracts/utils/introspection/ERC165.sol"
       ],
       "versionPragmas": [
         "0.8.13"
@@ -743,8 +743,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/FactorySFT.sol": {
-      "lastModificationDate": 1652600064540,
-      "contentHash": "7c02aae0e104119e7b9927afae6c9ce3",
+      "lastModificationDate": 1652624561990,
+      "contentHash": "7dac8ccfff39d02444d7c2cb89d01179",
       "sourceName": "contracts/FactorySFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -780,8 +780,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Factory.sol": {
-      "lastModificationDate": 1652616548510,
-      "contentHash": "63d93bf486c02b70165fbe1105185fc9",
+      "lastModificationDate": 1652629321640,
+      "contentHash": "6a7f40da2d3bf2b6ede6200f90323f05",
       "sourceName": "contracts/Factory.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -817,8 +817,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/NFT.sol": {
-      "lastModificationDate": 1652616257600,
-      "contentHash": "092829710072bcc5b71c3ab121e75e08",
+      "lastModificationDate": 1652619361420,
+      "contentHash": "6022408e0e3430e904d89fed1041b30a",
       "sourceName": "contracts/NFT.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -847,8 +847,7 @@
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/security/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/finance/PaymentSplitter.sol",
-        "@openzeppelin/contracts/utils/Counters.sol"
+        "@openzeppelin/contracts/finance/PaymentSplitter.sol"
       ],
       "versionPragmas": [
         "0.8.13"
@@ -858,8 +857,8 @@
       ]
     },
     "/home/mathieu/projetWestCoast/projetwestcoast/contracts/Marketplace.sol": {
-      "lastModificationDate": 1652617676990,
-      "contentHash": "60b1f547eee9a86c5ad97432b9655e3a",
+      "lastModificationDate": 1652630531060,
+      "contentHash": "8a8a8ab24ea1e812ad5a9f26639d6ac9",
       "sourceName": "contracts/Marketplace.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -887,7 +886,8 @@
       "imports": [
         "@openzeppelin/contracts/security/ReentrancyGuard.sol",
         "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
-        "./NFT.sol"
+        "./NFT.sol",
+        "./SFT.sol"
       ],
       "versionPragmas": [
         "0.8.13"

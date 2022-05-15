@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Button } from 'react-bootstrap'
+import { Row, Col, Card, Button, Form } from 'react-bootstrap'
 import React from 'react';
 import { ethers } from "ethers";
 
@@ -7,6 +7,8 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
 
     const [loading, setLoading] = useState(true);
     const [listedItems, setListedItems] = useState([]);
+    const [price, setPrice] = useState(null)
+
     const loadListedItems = async () => {
         // Load all sold items that the user listed
         const itemCountTemp = await state.marketContract.itemCount();
@@ -51,6 +53,16 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
         await (await state.marketContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait()
         loadListedItems();
       }
+  
+      const changePrice = async (item, price) => {
+        await (await state.marketContract.changePrice(item.itemId, price)).wait()
+        loadListedItems()
+      }
+  
+      const removeFromMarket = async (item) => {
+        await (await state.marketContract.removeFromMarketplace(item.itemId)).wait()
+        loadListedItems()
+      }
 
       useEffect(() => {
         loadListedItems();
@@ -79,11 +91,25 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
                       </Card.Body>
                       <Card.Footer>
                       {item.owner != account ? 
+                    <div className='d-grid'> 
+                      {item.isSFT 
+                      ? <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
+                            Buy 1 for {ethers.utils.formatEther(item.totalPrice)} ETH
+                      </Button> 
+                      : <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
+                            Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                        </Button>}
+                    </div> :  
                     <div className='d-grid'>
-                      <Button onClick={() => buyMarketItem(item)} variant="primary" size="md">
-                        Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                      It's yours! Price: {ethers.utils.formatEther(item.totalPrice)} ETH
+                      <Form.Control onChange={(e) => setPrice(e.target.value)} size="sm" required type="text" placeholder="Enter new price" className='mt-2' />
+                      <Button onClick={() => changePrice(item, price)} variant="primary" size="md" className="mb-1 mt-2">
+                        Change Price
                       </Button>
-                    </div> :  <div>It's yours! <br></br>On sale : {ethers.utils.formatEther(item.totalPrice)} ETH</div>}
+                      <Button onClick={() => removeFromMarket(item)} variant="primary" size="md" className='mb-2'>
+                        Remove
+                      </Button>
+                    </div>}
                   </Card.Footer>
                     </Card>
                   </Col>
