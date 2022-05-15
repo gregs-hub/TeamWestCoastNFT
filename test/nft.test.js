@@ -46,6 +46,19 @@ describe("NFTeamWestCoastDapp", async function () {
     })
 
     describe("Minting", function() {
+
+        it("Should see correct owner of the minted NFT for address1", async function() {
+            await nft.connect(addr1).mint()
+            let newOwner = await nft.ownerOf(1)
+            expect(newOwner).to.equal(addr1.address);
+        })
+
+        it.skip("Should see correct owner of the minted NFT for address2", async function() {
+            await nft.connect(addr2).mint()
+            let newOwner = await nft.ownerOf(1)
+            expect(newOwner).to.equal(addr2.address);
+        })
+
         it.skip("Should see correct balance after minting a NFT for address1", async function() {
             await nft.connect(addr1).mint()
             expect(await nft.balanceOf(addr1.address)).to.equal(1);
@@ -76,12 +89,7 @@ describe("NFTeamWestCoastDapp", async function () {
             await nft.connect(addr1).mint()
             expect(await nft.baseURI()).to.equal(nftBaseUri);
         })
-
-        it("Should see correct URI after minting a NFT for address2", async function() {
-            await nft.connect(addr2).mint()
-            expect(await nft.baseURI()).to.equal(nftBaseUri);
-        })
-        
+           
     })
 
     describe("Marketplace", function () {
@@ -93,7 +101,7 @@ describe("NFTeamWestCoastDapp", async function () {
           })
 
         it("Should see owner of NFT with tokenid = 1 is the marketplace", async function() {
-             // Owner of NFT should now be the marketplace
+            // Owner of NFT should now be the marketplace
             let newOwner = await nft.ownerOf(1)
             expect(newOwner).to.equal(addr1.address);
         })
