@@ -1,3 +1,7 @@
+## Link to access the app
+
+https://team-west-coast-nft.vercel.app/
+
 ## Scripts of this Dapp
 
 ### Install dependencies
