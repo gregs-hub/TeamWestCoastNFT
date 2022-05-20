@@ -76,7 +76,7 @@ function ItemsByCollection({ state, account, collectionExplore, setCollectionExp
         <div className="flex justify-center">
           {listedItems.length > 0 ?
             <div className="px-5 py-3 container">
-                <h2>Listed</h2>  
+                <h2 className="coiny">Listed</h2>  
               <Row xs={1} md={2} lg={4} className="g-4 py-3">
                 {listedItems.map((item, idx) => (
                   <Col key={idx} className="overflow-hidden">
